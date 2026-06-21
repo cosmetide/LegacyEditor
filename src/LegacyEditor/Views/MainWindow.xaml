@@ -1,0 +1,699 @@
+﻿<Window x:Class="LegacyEditor.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:LegacyEditor.Controls"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        Title="LegacyEditor v0.0.1"
+        Width="860" Height="680" MinWidth="700" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBaseBrush}"
+        TextOptions.TextRenderingMode="ClearType"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" CornerRadius="0" CaptionHeight="30" ResizeBorderThickness="6"/>
+    </shell:WindowChrome.WindowChrome>
+    <Grid Background="{StaticResource BgBaseBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title bar (draggable) -->
+        <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1" Padding="10,0,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="BackBtn" Content="&#x2190;" Width="30" Height="26"
+                        FontSize="12" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{StaticResource AccentBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="BackBtn_Click" Margin="0,0,6,0"/>
+                <TextBlock Grid.Column="1" Text="LegacyEditor" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="2" x:Name="FileTitle" FontSize="12"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="3" x:Name="FileStatus" Style="{StaticResource SubText}"
+                           FontSize="11" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                <Button Grid.Column="4" x:Name="MinBtn" Content="&#x2014;" Width="40" Height="28"
+                        FontSize="14" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="MinBtn_Click"/>
+                <Button Grid.Column="5" x:Name="CloseBtn" Content="&#x2716;" Width="40" Height="28"
+                        FontSize="12" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="CloseBtn_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Tab control -->
+        <TabControl Grid.Row="1" Margin="0" Padding="0"
+                     Background="{StaticResource BgBaseBrush}"
+                     BorderThickness="0"
+                     TabStripPlacement="Top">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    <Setter Property="Padding" Value="16,8"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="TabBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource BgBaseBrush}"/>
+                                        <Setter TargetName="TabBorder" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                        <Setter TargetName="TabBorder" Property="BorderThickness" Value="0,0,0,2"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- Entity tab -->
+            <TabItem Header="Entity">
+                <ScrollViewer Padding="16,14,16,12" VerticalScrollBarVisibility="Auto"
+                               Background="{StaticResource BgBaseBrush}">
+                    <StackPanel>
+                        <!-- File card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="World File"
+                                           Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Input:" VerticalAlignment="Center"
+                                           Style="{StaticResource SubText}" Width="50"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="InputPathBox" IsReadOnly="True"
+                                         FontSize="12" FontFamily="Consolas" Padding="4,6" Margin="0,0,6,10"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="Browse" Style="{StaticResource SmallButton}"
+                                        Click="BrowseInput_Click" Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Output:" VerticalAlignment="Center"
+                                           Style="{StaticResource SubText}" Width="50"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="OutputPathBox" IsReadOnly="True"
+                                         FontSize="12" FontFamily="Consolas" Padding="4,6" Margin="0,0,6,0"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="Browse" Style="{StaticResource SmallButton}"
+                                        Click="BrowseOutput_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Dimensions card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <Grid>
+                                <TextBlock Text="Dimensions" Style="{StaticResource SectionTitle}"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0" HorizontalAlignment="Center">
+                                    <Border x:Name="DimOverworld" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{StaticResource BgElevatedBrush}"
+                                            BorderBrush="{StaticResource AccentBrush}"
+                                            MouseDown="DimOverworld_MouseDown" Margin="0,0,8,0">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F30D;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Overworld" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="DimNether" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{StaticResource BgElevatedBrush}"
+                                            BorderBrush="{StaticResource BorderBrush}"
+                                            MouseDown="DimNether_MouseDown" Margin="0,0,8,0">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F525;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Nether" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="DimEnd" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{StaticResource BgElevatedBrush}"
+                                            BorderBrush="{StaticResource BorderBrush}"
+                                            MouseDown="DimEnd_MouseDown">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F4A0;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="End" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Mode card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Wipe Mode" Style="{StaticResource SectionTitle}"/>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Standard"
+                                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <CheckBox x:Name="AdvModeToggle" Grid.Column="1"
+                                              Style="{StaticResource ToggleSwitch}"
+                                              Checked="AdvMode_Changed" Unchecked="AdvMode_Changed"/>
+                                    <TextBlock Grid.Column="2" Text="Advanced"
+                                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                </Grid>
+                                <Separator Margin="0,2"/>
+                                <TextBlock Text="Entity Mode" Style="{StaticResource SectionTitle}" Margin="0,6,0,6"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border x:Name="WhitelistBtn" Grid.Column="0" Height="36" CornerRadius="6"
+                                            Cursor="Hand" Background="{StaticResource AccentBrush}"
+                                            BorderThickness="1" BorderBrush="{StaticResource AccentBrush}"
+                                            MouseDown="WhitelistBtn_MouseDown" Margin="0,0,4,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Opacity" Value="0.85"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="Whitelist" Foreground="#fff" FontSize="13" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border x:Name="BlacklistBtn" Grid.Column="1" Height="36" CornerRadius="6"
+                                            Cursor="Hand" Background="{StaticResource BgElevatedBrush}"
+                                            BorderThickness="1" BorderBrush="{StaticResource BorderBrush}"
+                                            MouseDown="BlacklistBtn_MouseDown" Margin="4,0,0,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="Blacklist" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                                <TextBlock x:Name="ModeDesc" Text="Only checked entities will be wiped"
+                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,6,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Entities card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <controls:EntityPicker x:Name="EntityPickerCtrl"/>
+                        </Border>
+
+                        <!-- Tile Entities card (collapsed by default) -->
+                        <Border x:Name="TileEntityCard" Style="{StaticResource Card}" Margin="0,0,0,10" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#2a1a1a" BorderBrush="{StaticResource WarningBrush}"
+                                        BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,0,10">
+                                    <TextBlock Foreground="{StaticResource WarningBrush}" FontSize="12" TextWrapping="Wrap">
+                                        <Run FontWeight="Bold" Text="Warning: "/>
+                                        <Run Text="Tile entities contain world data — chests, spawners, command blocks, etc. "/>
+                                        <Run Text="Wiping these removes their contents and functionality."/>
+                                    </TextBlock>
+                                </Border>
+                                <controls:EntityPicker Grid.Row="1" x:Name="TileEntityPickerCtrl"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Log card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10" MinHeight="120">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Log"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                    <Button Grid.Column="2" Content="Clear" Style="{StaticResource SmallButton}"
+                                            Click="ClearLog_Click" Width="60"
+                                            VerticalAlignment="Center"/>
+                                </Grid>
+                                <Border Grid.Row="1" Background="{StaticResource BgElevatedBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1" CornerRadius="6">
+                                    <TextBox x:Name="LogBox" IsReadOnly="True"
+                                             FontFamily="Consolas" FontSize="11"
+                                             Background="Transparent"
+                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                             TextWrapping="Wrap" Padding="8,6"
+                                             BorderThickness="0"
+                                             VerticalScrollBarVisibility="Auto"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Rectangle Height="52" Opacity="0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- XUID tab -->
+            <TabItem Header="XUID">
+                <Grid Background="{StaticResource BgBaseBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top bar: search + sort -->
+                    <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="0,0,0,1" Padding="12,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="XuidSearchBox" FontSize="12" Padding="6,4"
+                                     TextChanged="XuidSearch_TextChanged">
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{StaticResource BgElevatedBrush}"
+                                                BorderBrush="{StaticResource BorderBrush}"
+                                                BorderThickness="1" CornerRadius="4" Padding="6,4">
+                                            <ScrollViewer x:Name="PART_ContentHost"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <TextBlock Grid.Column="0" IsHitTestVisible="False" FontSize="12"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       VerticalAlignment="Center" Margin="10,0,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Search XUID..."/>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=XuidSearchBox, Path=Text.Length}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=XuidSearchBox, Path=IsKeyboardFocused}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Grid.Column="1" Text="Sort by:" FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" Margin="12,0,6,0"/>
+                            <ComboBox x:Name="XuidSortBox" Grid.Column="2"
+                                      FontSize="12" SelectedIndex="1"
+                                      Background="{StaticResource BgElevatedBrush}"
+                                      Foreground="{StaticResource TextPrimaryBrush}"
+                                      BorderBrush="{StaticResource BorderBrush}"
+                                      SelectionChanged="XuidSort_Changed">
+                                <sys:String>Items</sys:String>
+                                <sys:String>XP Level</sys:String>
+                            </ComboBox>
+                            <TextBlock Grid.Column="3" Text="Order:" FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" Margin="8,0,6,0"/>
+                            <ComboBox x:Name="XuidSortDirBox" Grid.Column="4"
+                                      FontSize="12" SelectedIndex="0"
+                                      Background="{StaticResource BgElevatedBrush}"
+                                      Foreground="{StaticResource TextPrimaryBrush}"
+                                      BorderBrush="{StaticResource BorderBrush}"
+                                      SelectionChanged="XuidSort_Changed">
+                                <sys:String>Highest First</sys:String>
+                                <sys:String>Lowest First</sys:String>
+                            </ComboBox>
+                        </Grid>
+                    </Border>
+
+                    <!-- Body: list + detail -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" MinWidth="260"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="2*" MinWidth="240"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left: XUID list -->
+                        <Border Grid.Column="0" Background="{StaticResource BgSurfaceBrush}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="0,0,1,0" Padding="4,4">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="4,2,4,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="XUID" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Grid.Column="1" x:Name="PlayerCountText" FontSize="11"
+                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                </Grid>
+                                 <ListBox x:Name="XuidListBox" Grid.Row="1"
+                                          Background="Transparent" BorderThickness="0"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                          SelectionMode="Extended"
+                                          SelectionChanged="XuidList_SelectionChanged"
+                                          KeyDown="XuidListBox_KeyDown">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="Transparent" Padding="6,3">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource AccentBrush}"
+                                                               VerticalAlignment="Center" Text="{Binding XUID}"/>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                               Margin="6,0,0,0" Text="|"/>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                                               Margin="6,0,0,0">
+                                                        <Run Text="0x"/>
+                                                        <Run Text="{Binding XUID, StringFormat={}{0:X16}}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                               Margin="6,0,0,0" Text="|"/>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource WarningBrush}"
+                                                               Margin="6,0,0,0">
+                                                        <Run Text="Lv."/>
+                                                        <Run Text="{Binding XpLevel}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                               Margin="6,0,0,0" Text="|"/>
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource SuccessBrush}"
+                                                               Margin="6,0,0,0">
+                                                        <Run Text="{Binding TotalItemCount, StringFormat={}{0:N0}}"/>
+                                                        <Run Text="items"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </Border>
+
+                        <!-- Divider -->
+                        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
+                                      Background="{StaticResource BgBaseBrush}"
+                                      BorderBrush="{StaticResource BorderBrush}"
+                                      BorderThickness="0" ResizeBehavior="PreviousAndNext"/>
+
+                        <!-- Right: player detail -->
+                        <Border Grid.Column="2" Background="{StaticResource BgSurfaceBrush}" Padding="12,8"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel x:Name="PlayerDetailPanel">
+                                    <!-- Empty state -->
+                                    <TextBlock x:Name="DetailEmptyText" Text="Select a player to view details"
+                                               FontSize="13" Foreground="{StaticResource TextMutedBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Margin="0,60,0,0"/>
+                                    <!-- Detail content (hidden by default) -->
+                                    <StackPanel x:Name="DetailContent" Visibility="Collapsed">
+                                        <TextBlock x:Name="DetailUsername" FontSize="16" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock x:Name="DetailXuid" FontSize="11"
+                                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,10"/>
+                                        <Separator/>
+                                        <Grid Margin="0,8,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="HEALTH" FontSize="10"
+                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailHealth" FontSize="16"
+                                                           Foreground="{StaticResource SuccessBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="HUNGER" FontSize="10"
+                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailHunger" FontSize="16"
+                                                           Foreground="{StaticResource WarningBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Margin="0,4,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="ITEMS" FontSize="10"
+                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailItems" FontSize="14"
+                                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="SCORE" FontSize="10"
+                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailScore" FontSize="14"
+                                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Separator Margin="0,6"/>
+
+                                        <!-- Inventory -->
+                                        <TextBlock Text="INVENTORY" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="0,4,0,2"/>
+                                        <ItemsControl x:Name="DetailInvList">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="{Binding Name}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Count}" Value="1">
+                                                                        <Setter Property="Text" Value="{Binding Name, StringFormat={}{0}}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <!-- Armor -->
+                                        <TextBlock Text="ARMOR" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="0,8,0,2"/>
+                                        <ItemsControl x:Name="DetailArmorList">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <!-- Ender Chest -->
+                                        <TextBlock Text="ENDER CHEST" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="0,8,0,2"/>
+                                        <ItemsControl x:Name="DetailEnderChestList">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="{Binding Name}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Count}" Value="1">
+                                                                        <Setter Property="Text" Value="{Binding Name, StringFormat={}{0}}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+
+                    <!-- Bottom: wipe controls -->
+                    <Border Grid.Row="2" Background="{StaticResource BgSurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="0,1,0,0" Padding="12,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="ImportXuidBtn" Grid.Column="0" Content="Import XUID List"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="ImportXuidList_Click" Margin="0,0,6,0"/>
+                            <Button x:Name="ImportAuthyBtn" Grid.Column="1" Content="Import Authy DB"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="ImportAuthyDb_Click" Margin="0,0,6,0"/>
+                            <Button x:Name="WipeEmptyBtn" Grid.Column="2" Content="Wipe Empty Players"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="WipeEmpty_Click" Margin="0,0,6,0"
+                                    ToolTip="Removes players with 0 items and 0 XP level"/>
+                            <Button x:Name="DeleteSelBtn" Grid.Column="3" Content="Delete Selected"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="DeleteSelected_Click" Margin="0,0,6,0"
+                                    ToolTip="Delete selected players from the archive"
+                                    IsEnabled="False"/>
+                            <TextBlock x:Name="WipeStatusText" Grid.Column="4" FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" Margin="12,0,12,0"/>
+                            <Button x:Name="UndoBtn" Grid.Column="5" Content="Undo"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="Undo_Click" Margin="0,0,6,0"
+                                    ToolTip="Undo last wipe/delete (Ctrl+Z)"
+                                    IsEnabled="False"/>
+                            <Button x:Name="RefreshBtn" Grid.Column="6" Content="Refresh"
+                                    Style="{StaticResource SmallButton}"
+                                    Click="Refresh_Click" Margin="0,0,6,0"
+                                    ToolTip="Reload player list from current file"/>
+                            <Button x:Name="WipeXuidBtn" Grid.Column="7"
+                                    Content="Remove Players NOT in Imported List"
+                                    ToolTip="All players whose XUID is NOT in the imported list will be removed from the archive"
+                                    Style="{StaticResource DangerButton}"
+                                    IsEnabled="False" Click="WipeXuid_Click"/>
+                        </Grid>
+                    </Border>
+                    <!-- Loading overlay -->
+                    <Border x:Name="XuidLoadingOverlay" Grid.RowSpan="3"
+                            Background="#C01a1b23" Visibility="Collapsed"
+                            Panel.ZIndex="100">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                                         Foreground="{StaticResource AccentBrush}"
+                                         Background="{StaticResource BgElevatedBrush}"/>
+                            <TextBlock x:Name="XuidLoadingText" FontSize="14"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Margin="0,16,0,0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Bottom bar -->
+        <Border Grid.Row="2" Background="{StaticResource BgSurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0" Padding="14,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Grid.Column="0"
+                           Style="{StaticResource SubText}" VerticalAlignment="Center"/>
+                <Button x:Name="CancelBtn" Grid.Column="1" Content="Cancel" Width="80" Height="32"
+                        IsEnabled="False" Click="CancelBtn_Click" Margin="0,0,8,0"/>
+                <Button x:Name="ProcessBtn" Grid.Column="2" Content="Process World" Width="150" Height="36"
+                        Style="{StaticResource PrimaryButton}" Click="ProcessBtn_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Progress overlay -->
+        <Border x:Name="ProgressOverlay" Grid.RowSpan="3" Visibility="Collapsed"
+                Background="#C01a1b23" Panel.ZIndex="200">
+            <Border Width="420" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="{StaticResource BgSurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+                    Padding="20">
+                <StackPanel>
+                    <TextBlock x:Name="ProgressTitle" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                    <ProgressBar x:Name="ProgressBar" Height="6"
+                                 Foreground="{StaticResource AccentBrush}"
+                                 Background="{StaticResource BgElevatedBrush}"/>
+                    <TextBlock x:Name="ProgressStatus" FontSize="12"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,8,0,0"/>
+                    <Border Margin="0,8,0,0" Background="{StaticResource BgBaseBrush}"
+                            CornerRadius="4" Padding="6,4" MaxHeight="160">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl x:Name="ProgressLog"/>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,42 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v0.0.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        shell: pwsh
+        run: ./publish.ps1 -version "${{ github.event.inputs.version }}"
+
+      - name: Zip build
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "LegacyEditor-${{ github.event.inputs.version }}-Windows/*" -DestinationPath "LegacyEditor-${{ github.event.inputs.version }}-Windows.zip"
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.event.inputs.version }}" `
+            "LegacyEditor-${{ github.event.inputs.version }}-Windows.zip" `
+            --title "${{ github.event.inputs.version }}" `
+            --notes "Release ${{ github.event.inputs.version }}"

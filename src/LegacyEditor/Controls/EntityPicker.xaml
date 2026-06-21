@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="LegacyEditor.Controls.EntityPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="600">
+    <UserControl.Resources>
+        <DataTemplate x:Key="EntityCheckItem">
+            <CheckBox Content="{Binding DisplayName}"
+                      IsChecked="{Binding IsSelected}"
+                      FontSize="13" Margin="4,1"/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="HeaderText" Grid.Column="0" Style="{StaticResource SectionTitle}"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button x:Name="ExpandBtn" Content="Edit Selection" Style="{StaticResource SmallButton}"
+                        Click="ToggleExpand_Click" Margin="0,0,6,0"/>
+                <Button x:Name="SelectAllBtn" Content="All" Style="{StaticResource SmallButton}"
+                        Click="SelectAll_Click" Margin="0,0,4,0" Width="40"/>
+                <Button x:Name="DefaultBtn" Content="Default" Style="{StaticResource SmallButton}"
+                        Click="Default_Click" Margin="0,0,4,0" Width="55"/>
+                <Button x:Name="SelectNoneBtn" Content="None" Style="{StaticResource SmallButton}"
+                        Click="SelectNone_Click" Width="45"/>
+            </StackPanel>
+        </Grid>
+
+        <Border x:Name="CompactView" Grid.Row="1" MinHeight="38"
+                Background="{StaticResource BgElevatedBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1" CornerRadius="6" Padding="8"
+                MouseDown="CompactView_MouseDown" Cursor="Hand">
+            <WrapPanel x:Name="TagsPanel"/>
+        </Border>
+
+        <Border x:Name="ExpandedView" Grid.Row="1" Visibility="Collapsed" MinHeight="120"
+                Background="{StaticResource BgElevatedBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1" CornerRadius="6" Padding="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="SearchBox" Grid.Row="0"
+                         TextChanged="SearchBox_TextChanged"
+                         Margin="4" Padding="6,4"/>
+                <ListBox x:Name="EntityListBox" Grid.Row="1"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         MinHeight="80"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.CanContentScroll="False"
+                         ItemTemplate="{StaticResource EntityCheckItem}"/>
+                <TextBlock x:Name="CountText" Grid.Row="2"
+                           Style="{StaticResource SubText}" Margin="6,4,6,2"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
