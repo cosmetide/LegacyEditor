@@ -1,9 +1,11 @@
-![LegacyEditor](src/LegacyEditor/LegacyEditor.ico)
+<div align="center">
+  <img src="src/LegacyEditor/LegacyEditor.ico" width="64" alt="LegacyEditor">
+  <h1>LegacyEditor</h1>
+  <p>A WPF tool for editing Minecraft: Legacy Console Edition world files (<code>.ms</code> archives).<br>
+  Designed for use with the <b>Minecraft Legacy Console Leak</b>.</p>
+</div>
 
-# LegacyEditor
-
-A WPF tool for editing Minecraft Legacy Console world files (`.ms` archives).  
-Designed for Xbox 360/One save editing — remove empty players, wipe entities by XUID, and clean up region files.
+---
 
 ## Features
 
@@ -32,7 +34,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/Cosmetide/LegacyEditor.git
 cd LegacyEditor
-./publish.ps1 -version "0.0.1"
+./publish.ps1
 ```
 
-The output will be in `LegacyEditor-v0.0.1-Windows\`.
+The version is read automatically from the `.csproj`. The output will be in `LegacyEditor-v{version}-Windows\`.

@@ -4,7 +4,7 @@
         xmlns:controls="clr-namespace:LegacyEditor.Controls"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-        Title="LegacyEditor v0.0.1"
+        Title="LegacyEditor"
         Width="860" Height="680" MinWidth="700" MinHeight="520"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBaseBrush}"

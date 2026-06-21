@@ -36,6 +36,8 @@ public partial class MainWindow : Window
     public MainWindow(string? inputPath)
     {
         InitializeComponent();
+        var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
         InitPickers();
         if (!string.IsNullOrEmpty(inputPath))
             LoadFile(inputPath);

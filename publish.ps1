@@ -1,8 +1,13 @@
 param(
-    [string]$version = "0.0.1"
+    [string]$version = ""
 )
 
 $project = "src\LegacyEditor\LegacyEditor.csproj"
+
+if (-not $version) {
+    $version = Select-Xml -Path $project -XPath "//Version" | Select-Object -ExpandProperty Node | Select-Object -ExpandProperty InnerText
+}
+
 $output = "LegacyEditor-v$version-Windows"
 
 Write-Host "Building LegacyEditor v$version..." -ForegroundColor Cyan
@@ -11,7 +16,6 @@ dotnet publish $project -c Release -r win-x64 --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:DebugType=embedded `
-    -p:Version=$version `
     -o $output
 
 if ($LASTEXITCODE -ne 0) {
