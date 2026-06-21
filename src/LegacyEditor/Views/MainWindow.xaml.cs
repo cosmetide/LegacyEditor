@@ -253,6 +253,78 @@ public partial class MainWindow : Window
         ProcessBtn.IsEnabled = _hasChanges && _rawArchiveData != null;
     }
 
+    bool ConfirmAction(string message)
+    {
+        var win = new Window
+        {
+            Title = "LegacyEditor",
+            Width = 380, Height = 200,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Owner = this,
+            WindowStyle = WindowStyle.None,
+            ResizeMode = ResizeMode.NoResize,
+            ShowInTaskbar = false,
+            AllowsTransparency = true,
+            Background = FindResource("BgBaseBrush") as Brush ?? Brushes.Black,
+        };
+        var border = new Border
+        {
+            Background = FindResource("BgSurfaceBrush") as Brush ?? Brushes.Black,
+            BorderBrush = FindResource("BorderBrush") as Brush ?? Brushes.Gray,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8)
+        };
+        var grid = new Grid();
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var titleBar = new Border
+        {
+            Background = FindResource("BgSurfaceBrush") as Brush ?? Brushes.Black,
+            BorderBrush = FindResource("BorderBrush") as Brush ?? Brushes.Gray,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(16, 10, 16, 10),
+            Child = new TextBlock
+            {
+                Text = "Confirm",
+                FontSize = 14, FontWeight = FontWeights.SemiBold,
+                Foreground = FindResource("TextPrimaryBrush") as Brush ?? Brushes.White
+            }
+        };
+        Grid.SetRow(titleBar, 0);
+        var body = new TextBlock
+        {
+            Text = message, FontSize = 13,
+            Foreground = FindResource("TextPrimaryBrush") as Brush ?? Brushes.White,
+            TextWrapping = TextWrapping.Wrap, Margin = new Thickness(16, 14, 16, 14),
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        Grid.SetRow(body, 1);
+        var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 0, 12, 10) };
+        var yesBtn = new Button { Content = "Yes", Width = 70, Height = 30, Margin = new Thickness(0, 0, 8, 0), Style = FindResource("DangerButton") as Style ?? new Style() };
+        var noBtn = new Button { Content = "No", Width = 70, Height = 30, Style = FindResource("PrimaryButton") as Style ?? new Style() };
+        bool result = false;
+        yesBtn.Click += (_, _) => { result = true; win.Close(); };
+        noBtn.Click += (_, _) => win.Close();
+        btnPanel.Children.Add(yesBtn);
+        btnPanel.Children.Add(noBtn);
+        Grid.SetRow(btnPanel, 2);
+        grid.Children.Add(titleBar);
+        grid.Children.Add(body);
+        grid.Children.Add(btnPanel);
+        border.Child = grid;
+        win.Content = border;
+        win.ShowDialog();
+        return result;
+    }
+
+    void UpdateXuidButtons()
+    {
+        var hasImport = _importedXuids != null;
+        EraseAllBtn.Visibility = hasImport ? Visibility.Collapsed : Visibility.Visible;
+        WipeXuidBtn.Visibility = hasImport ? Visibility.Visible : Visibility.Collapsed;
+    }
+
     void ShowAlert(string msg)
     {
         var win = new Window
@@ -364,6 +436,7 @@ public partial class MainWindow : Window
             UndoBtn.IsEnabled = false;
             WipeStatusText.Text = "";
             WipeXuidBtn.IsEnabled = false;
+            UpdateXuidButtons();
             ApplyPlayerFilterAndSort();
             Log($"Loaded {_allPlayers.Count} players from archive");
         }
@@ -465,6 +538,7 @@ public partial class MainWindow : Window
         _importedXuids = null;
         WipeStatusText.Text = logMessage;
         WipeXuidBtn.IsEnabled = false;
+        UpdateXuidButtons();
         ApplyPlayerFilterAndSort();
     }
 
@@ -482,6 +556,8 @@ public partial class MainWindow : Window
             ShowAlert("No players matching wipe criteria found.");
             return;
         }
+        if (!ConfirmAction($"Remove {emptyCount} low-level player(s)?"))
+            return;
 
         var archive = MsArchive.Parse(_rawArchiveData);
         var emptyFiles = _allPlayers
@@ -586,6 +662,7 @@ public partial class MainWindow : Window
         var kept = XuidWipeService.CountKept(allXuids, imported);
         WipeStatusText.Text = $"{kept} of {_allPlayers.Count} players will be kept";
         WipeXuidBtn.IsEnabled = true;
+        UpdateXuidButtons();
     }
 
     async void WipeXuid_Click(object sender, RoutedEventArgs e)
@@ -595,6 +672,10 @@ public partial class MainWindow : Window
             ShowAlert("Import an XUID list or Authy DB first.");
             return;
         }
+
+        var removeCount = _allPlayers?.Count(p => !_importedXuids.Contains(p.XUID)) ?? 0;
+        if (!ConfirmAction($"Remove {removeCount} player(s) not in the imported list?\n\nPlayers in the imported list will be kept."))
+            return;
 
         var allXuids = _allPlayers?.Select(p => p.XUID).ToHashSet() ?? [];
         var keepCount = _allPlayers?.Count(p => _importedXuids.Contains(p.XUID)) ?? 0;
@@ -660,6 +741,8 @@ public partial class MainWindow : Window
             ShowAlert("Cannot delete all players. At least one player must remain.");
             return;
         }
+        if (!ConfirmAction($"Delete {selected.Count} selected player(s)?"))
+            return;
 
         PushUndo();
         DeleteSelBtn.IsEnabled = false;
@@ -667,7 +750,7 @@ public partial class MainWindow : Window
         {
             var newData = XuidWipeService.DeletePlayers(_rawArchiveData, selected);
             var kept = _allPlayers.Count - selected.Count;
-            await Task.Run(() => RefreshWipeState(newData, $"Deleted {selected.Count} player(s), {kept} remaining"));
+            await RefreshWipeState(newData, $"Deleted {selected.Count} player(s), {kept} remaining");
             _hasChanges = true;
             EnableSaveIfDirty();
         }
@@ -699,6 +782,7 @@ public partial class MainWindow : Window
         _importedXuids = null;
         WipeStatusText.Text = "Undone";
         WipeXuidBtn.IsEnabled = false;
+        UpdateXuidButtons();
         UndoBtn.IsEnabled = _undoStack.Count > 0;
         _hasChanges = true;
         EnableSaveIfDirty();
@@ -713,6 +797,7 @@ public partial class MainWindow : Window
         _importedXuids = null;
         WipeStatusText.Text = "Refreshed";
         WipeXuidBtn.IsEnabled = false;
+        UpdateXuidButtons();
         ApplyPlayerFilterAndSort();
     }
 
@@ -758,6 +843,40 @@ public partial class MainWindow : Window
         {
             ProcessBtn.IsEnabled = true;
             CancelBtn.IsEnabled = false;
+        }
+    }
+
+    async void EraseAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (_rawArchiveData == null || _allPlayers == null)
+        {
+            ShowAlert("Load a world file first.");
+            return;
+        }
+
+        if (!ConfirmAction($"Remove all {_allPlayers.Count} players from the archive?\n\nThis will delete every player.dat file. Use Save Changes to write to disk."))
+            return;
+
+        PushUndo();
+        EraseAllBtn.IsEnabled = false;
+        try
+        {
+            var toRemove = _allPlayers.Select(p => $"players\\{p.XUID}.dat").ToHashSet();
+            var archive = MsArchive.Parse(_rawArchiveData);
+            var newData = archive.Rebuild(_rawArchiveData, toRemove);
+            _rawArchiveData = newData;
+            _hasChanges = true;
+            EnableSaveIfDirty();
+            Log($"Removed all {_allPlayers.Count} players");
+            await RefreshWipeState(newData, "All players removed");
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error: {ex.Message}");
+        }
+        finally
+        {
+            EraseAllBtn.IsEnabled = true;
         }
     }
 

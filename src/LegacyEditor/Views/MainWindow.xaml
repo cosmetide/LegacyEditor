@@ -5,7 +5,7 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         Title="LegacyEditor"
-        Width="860" Height="680" MinWidth="700" MinHeight="520"
+        Width="1050" Height="680" MinWidth="900" MinHeight="520"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBaseBrush}"
         TextOptions.TextRenderingMode="ClearType"
@@ -646,7 +646,12 @@
                                     Content="Remove Players NOT in Imported List"
                                     ToolTip="All players whose XUID is NOT in the imported list will be removed from the archive"
                                     Style="{StaticResource DangerButton}"
-                                    IsEnabled="False" Click="WipeXuid_Click"/>
+                                    IsEnabled="False" Click="WipeXuid_Click" Visibility="Collapsed"/>
+                            <Button x:Name="EraseAllBtn" Grid.Column="7"
+                                    Content="Erase All Players"
+                                    ToolTip="Remove all players from the archive"
+                                    Style="{StaticResource DangerButton}"
+                                    Click="EraseAll_Click"/>
                         </Grid>
                     </Border>
                     <!-- Loading overlay -->
