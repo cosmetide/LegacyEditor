@@ -10,8 +10,8 @@ public partial class WelcomeWindow : Window
     public WelcomeWindow()
     {
         InitializeComponent();
-        var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-        Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
+        var v = System.Reflection.Assembly.GetExecutingAssembly().GetName()?.Version;
+        if (v != null) Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
         AllowDrop = true;
         Loaded += (_, _) => LoadRecentFiles();
     }

@@ -8,7 +8,8 @@ if (-not $version) {
     $version = Select-Xml -Path $project -XPath "//Version" | Select-Object -ExpandProperty Node | Select-Object -ExpandProperty InnerText
 }
 
-$output = "LegacyEditor-v$version-Windows"
+$ver = $version -replace '^v', ''
+$output = "LegacyEditor-v${ver}-Windows"
 
 Write-Host "Building LegacyEditor v$version..." -ForegroundColor Cyan
 

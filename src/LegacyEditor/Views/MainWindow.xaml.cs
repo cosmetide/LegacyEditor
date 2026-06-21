@@ -36,8 +36,8 @@ public partial class MainWindow : Window
     public MainWindow(string? inputPath)
     {
         InitializeComponent();
-        var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-        Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
+        var v = System.Reflection.Assembly.GetExecutingAssembly().GetName()?.Version;
+        if (v != null) Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
         InitPickers();
         if (!string.IsNullOrEmpty(inputPath))
             LoadFile(inputPath);
@@ -770,7 +770,7 @@ public partial class MainWindow : Window
         {
             var data = new byte[8];
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            fs.Read(data, 0, 8);
+            fs.ReadExactly(data, 0, 8);
             return BitConverter.ToInt32(data, 0) == 0;
         }
         catch { return false; }
