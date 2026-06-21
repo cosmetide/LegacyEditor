@@ -13,4 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LegacyEditor.ico" />
+  </ItemGroup>
 </Project>

@@ -6,21 +6,11 @@ namespace LegacyEditor.Services;
 
 public class WorldWiperService
 {
-    public async Task<WipeSummary> ProcessWorld(string inputPath, string outputPath,
-        WipeConfig config, IProgress<string> progress, CancellationToken ct = default)
+    /// <summary>
+    /// Processes entities in the archive in-memory and returns the rebuilt archive (or null if nothing changed).
+    /// </summary>
+    public byte[]? ProcessWipeMemory(byte[] rawData, WipeConfig config, IProgress<string> progress)
     {
-        progress.Report($"Reading {inputPath}...");
-        var rawData = await File.ReadAllBytesAsync(inputPath, ct);
-        rawData = MaybeDecompressMsStatic(rawData, out var wasCompressed);
-        return await ProcessWorldImpl(rawData, outputPath, config, progress, wasCompressed, inputPath, ct);
-    }
-
-    async Task<WipeSummary> ProcessWorldImpl(byte[] rawData, string outputPath,
-        WipeConfig config, IProgress<string> progress, bool wasCompressed, string logInputPath,
-        CancellationToken ct = default)
-    {
-        var summary = new WipeSummary();
-
         var archive = MsArchive.Parse(rawData);
         progress.Report($"Save version: {archive.SaveVer}, Files: {archive.Entries.Count}");
 
@@ -36,7 +26,6 @@ public class WorldWiperService
         }
 
         var regionJobs = new List<(string filename, byte[] data)>();
-
         foreach (var ent in archive.Entries)
         {
             var fn = ent.Filename;
@@ -66,70 +55,50 @@ public class WorldWiperService
 
         foreach (var (fn, region) in regionJobs)
         {
-            ct.ThrowIfCancellationRequested();
             progress.Report($"  {fn}: {region.Length} bytes");
-
             var result = ProcessRegion(fn, region, config, progress);
             if (result.newRegion != null)
             {
                 modifiedRegions[fn] = result.newRegion;
                 allRemoved.AddRange(result.removed);
             }
-            summary.TotalChunks += result.totalChunks;
-            summary.ReadFailures += result.readFailures;
         }
-
-        summary.TotalRemoved = allRemoved.Count;
 
         if (allRemoved.Count == 0)
         {
             progress.Report("No entities found to remove.");
-        }
-        else
-        {
-            progress.Report($"Total entities removed: {allRemoved.Count}");
-            foreach (var group in allRemoved.GroupBy(r => r.EntityId).OrderByDescending(g => g.Count()))
-            {
-                var displayName = EntityRegistry.GetDisplayName(group.Key);
-                progress.Report($"  {group.Key} ({displayName}): {group.Count()}");
-                foreach (var r in group.Take(10))
-                {
-                    var pos = r.PosX != null ? $" @ {r.PosX:F1},{r.PosY:F1},{r.PosZ:F1}" : "";
-                    progress.Report($"    {r.RegionFile} [{r.ChunkX},{r.ChunkZ}] ({r.ListKey}){pos}");
-                }
-                if (group.Count() > 10)
-                    progress.Report($"    ... and {group.Count() - 10} more");
-            }
+            return null;
         }
 
-        progress.Report("Writing output file...");
+        progress.Report($"Total entities removed: {allRemoved.Count}");
+        foreach (var group in allRemoved.GroupBy(r => r.EntityId).OrderByDescending(g => g.Count()))
+        {
+            var displayName = EntityRegistry.GetDisplayName(group.Key);
+            progress.Report($"  {group.Key} ({displayName}): {group.Count()}");
+            foreach (var r in group.Take(10))
+            {
+                var pos = r.PosX != null ? $" @ {r.PosX:F1},{r.PosY:F1},{r.PosZ:F1}" : "";
+                progress.Report($"    {r.RegionFile} [{r.ChunkX},{r.ChunkZ}] ({r.ListKey}){pos}");
+            }
+            if (group.Count() > 10)
+                progress.Report($"    ... and {group.Count() - 10} more");
+        }
+
+        progress.Report("Rebuilding archive...");
         var resultData = archive.Rebuild(rawData, modifiedRegions);
         progress.Report($"  Rebuilt archive ({resultData.Length} bytes)");
+        return resultData;
+    }
 
-        if (wasCompressed)
-        {
-            progress.Report("  Re-wrapping with compression...");
-            using var compStream = new MemoryStream();
-            using (var deflate = new ZLibStream(compStream, CompressionLevel.Optimal))
-                deflate.Write(resultData);
-            var comp = compStream.ToArray();
-            var flagBytes = BitConverter.GetBytes(0);           // LE on x86
-            var sizeBytes = BitConverter.GetBytes(resultData.Length); // LE on x86
-            resultData = [.. flagBytes, .. sizeBytes, .. comp];
-        }
-
-        await File.WriteAllBytesAsync(outputPath, resultData, ct);
-        progress.Report($"Done -> {outputPath}");
-
-        var logDir = Path.Combine(AppContext.BaseDirectory, "logs");
-        Directory.CreateDirectory(logDir);
-        var logName = "log-" + Path.GetFileNameWithoutExtension(outputPath) + ".log";
-        var logPath = Path.Combine(logDir, logName);
-        await WriteLog(logPath, logInputPath, outputPath, allRemoved);
-        progress.Report($"Log written -> {logPath}");
-
-        summary.Removed = allRemoved;
-        return summary;
+    public static byte[] CompressArchive(byte[] data)
+    {
+        using var compStream = new MemoryStream();
+        using (var deflate = new ZLibStream(compStream, CompressionLevel.Optimal))
+            deflate.Write(data);
+        var comp = compStream.ToArray();
+        var flagBytes = BitConverter.GetBytes(0);
+        var sizeBytes = BitConverter.GetBytes(data.Length);
+        return [.. flagBytes, .. sizeBytes, .. comp];
     }
 
     (byte[]? newRegion, List<WipeResult> removed, int totalChunks, int readFailures) ProcessRegion(

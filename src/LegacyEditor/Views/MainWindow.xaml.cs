@@ -13,8 +13,8 @@ namespace LegacyEditor.Views;
 public partial class MainWindow : Window
 {
     private readonly WorldWiperService _service = new();
-    static readonly string TempDir = Path.Combine(AppContext.BaseDirectory, "temp");
-    static readonly string TempFile = Path.Combine(TempDir, "temp.ms");
+    bool _hasChanges;
+    bool _wasCompressed;
     private CancellationTokenSource? _cts;
     private bool _dimOverworld = true;
     private bool _dimNether = true;
@@ -38,7 +38,6 @@ public partial class MainWindow : Window
     public MainWindow(string? inputPath)
     {
         InitializeComponent();
-        Closed += MainWindow_Closed;
         var v = System.Reflection.Assembly.GetExecutingAssembly().GetName()?.Version;
         if (v != null) Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
         InitPickers();
@@ -73,7 +72,7 @@ public partial class MainWindow : Window
         OutputPathBox.Text = defaultOutput;
 
         LogBox.Clear();
-        StatusText.Text = "Configure options and click Process World";
+        StatusText.Text = "Use Wipe Entities or XUID tab to make changes, then click Save Changes";
 
         AddRecentFile(inputPath);
         LoadPlayerData();
@@ -249,6 +248,11 @@ public partial class MainWindow : Window
 
     static void Popup(Window w) => w.ShowDialog();
 
+    void EnableSaveIfDirty()
+    {
+        ProcessBtn.IsEnabled = _hasChanges && _rawArchiveData != null;
+    }
+
     void ShowAlert(string msg)
     {
         var win = new Window
@@ -347,16 +351,16 @@ public partial class MainWindow : Window
 
         try
         {
-            var rawData = await Task.Run(() =>
-            {
-                var bytes = File.ReadAllBytes(inputPath);
-                return WorldWiperService.MaybeDecompressMsStatic(bytes, out _);
-            });
+            var rawBytes = await Task.Run(() => File.ReadAllBytes(inputPath));
+            _wasCompressed = false;
+            var rawData = WorldWiperService.MaybeDecompressMsStatic(rawBytes, out _wasCompressed);
             var players = await Task.Run(() => PlayerDataService.LoadPlayers(rawData));
             _rawArchiveData = rawData;
             _allPlayers = players;
             _importedXuids = null;
             _undoStack.Clear();
+            _hasChanges = false;
+            EnableSaveIfDirty();
             UndoBtn.IsEnabled = false;
             WipeStatusText.Text = "";
             WipeXuidBtn.IsEnabled = false;
@@ -520,6 +524,8 @@ public partial class MainWindow : Window
 
             PushUndo();
             await RefreshWipeState(result, "Low level players removed");
+            _hasChanges = true;
+            EnableSaveIfDirty();
         }
         catch (Exception ex)
         {
@@ -628,6 +634,8 @@ public partial class MainWindow : Window
 
             PushUndo();
             await RefreshWipeState(newArchive, "Players outside import list removed");
+            _hasChanges = true;
+            EnableSaveIfDirty();
         }
         catch (Exception ex)
         {
@@ -660,6 +668,8 @@ public partial class MainWindow : Window
             var newData = XuidWipeService.DeletePlayers(_rawArchiveData, selected);
             var kept = _allPlayers.Count - selected.Count;
             await Task.Run(() => RefreshWipeState(newData, $"Deleted {selected.Count} player(s), {kept} remaining"));
+            _hasChanges = true;
+            EnableSaveIfDirty();
         }
         catch (Exception ex)
         {
@@ -690,6 +700,8 @@ public partial class MainWindow : Window
         WipeStatusText.Text = "Undone";
         WipeXuidBtn.IsEnabled = false;
         UndoBtn.IsEnabled = _undoStack.Count > 0;
+        _hasChanges = true;
+        EnableSaveIfDirty();
         ApplyPlayerFilterAndSort();
     }
 
@@ -708,9 +720,9 @@ public partial class MainWindow : Window
     {
         var outputPath = OutputPathBox.Text;
 
-        if (_rawArchiveData == null && (string.IsNullOrEmpty(InputPathBox.Text) || !File.Exists(InputPathBox.Text)))
+        if (_rawArchiveData == null)
         {
-            ShowAlert("Please select a valid input .ms file.");
+            ShowAlert("Load a world file first.");
             return;
         }
         if (string.IsNullOrEmpty(outputPath))
@@ -721,34 +733,20 @@ public partial class MainWindow : Window
 
         ProcessBtn.IsEnabled = false;
         CancelBtn.IsEnabled = true;
-        LogBox.Clear();
-        StatusText.Text = "Processing...";
-        FileStatus.Text = "Processing...";
-
-        var config = AdvModeToggle.IsChecked == true ? GatherAdvancedConfig() : GatherConfig();
-        _cts = new CancellationTokenSource();
-        var progress = new Progress<string>(Log);
+        StatusText.Text = "Saving...";
+        FileStatus.Text = "Saving...";
 
         try
         {
-            if (_rawArchiveData != null)
-            {
-                Directory.CreateDirectory(TempDir);
-                await File.WriteAllBytesAsync(TempFile, _rawArchiveData);
-            }
+            var data = _rawArchiveData;
+            if (_wasCompressed)
+                data = WorldWiperService.CompressArchive(data);
 
-            var input = _rawArchiveData != null ? TempFile : InputPathBox.Text;
-            WipeSummary summary = await Task.Run(async () =>
-                await _service.ProcessWorld(input, outputPath, config, progress, _cts.Token),
-                _cts.Token);
-            Log("Processing complete!");
-            FileStatus.Text = "Complete";
-            ShowResultPopup(summary);
-        }
-        catch (OperationCanceledException)
-        {
-            Log("Cancelled.");
-            FileStatus.Text = "Cancelled";
+            await File.WriteAllBytesAsync(outputPath, data);
+            _hasChanges = false;
+            EnableSaveIfDirty();
+            Log($"Saved to {outputPath}");
+            FileStatus.Text = "Saved";
         }
         catch (Exception ex)
         {
@@ -763,9 +761,53 @@ public partial class MainWindow : Window
         }
     }
 
-    void MainWindow_Closed(object? sender, EventArgs e)
+    async void WipeEntities_Click(object sender, RoutedEventArgs e)
     {
-        try { Directory.Delete(TempDir, true); } catch { }
+        if (_rawArchiveData == null)
+        {
+            ShowAlert("Load a world file first.");
+            return;
+        }
+
+        WipeEntitiesBtn.IsEnabled = false;
+        CancelBtn.IsEnabled = true;
+        StatusText.Text = "Wiping entities...";
+        FileStatus.Text = "Wiping...";
+
+        var config = AdvModeToggle.IsChecked == true ? GatherAdvancedConfig() : GatherConfig();
+        _cts = new CancellationTokenSource();
+        var progress = new Progress<string>(Log);
+
+        try
+        {
+            var result = await Task.Run(() => _service.ProcessWipeMemory(_rawArchiveData, config, progress), _cts.Token);
+            if (result == null)
+            {
+                Log("No entities found to remove.");
+                return;
+            }
+            _rawArchiveData = result;
+            _hasChanges = true;
+            EnableSaveIfDirty();
+            Log("Entity wipe complete. Use Save Changes to write to disk.");
+            FileStatus.Text = "Entities wiped";
+        }
+        catch (OperationCanceledException)
+        {
+            Log("Cancelled.");
+            FileStatus.Text = "Cancelled";
+        }
+        catch (Exception ex)
+        {
+            Log($"Error: {ex.Message}");
+            FileStatus.Text = "Error";
+            ShowAlert($"Error: {ex.Message}");
+        }
+        finally
+        {
+            WipeEntitiesBtn.IsEnabled = true;
+            CancelBtn.IsEnabled = false;
+        }
     }
 
 }

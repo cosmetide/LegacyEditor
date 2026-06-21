@@ -29,6 +29,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -39,20 +40,22 @@
                         Background="Transparent" Foreground="{StaticResource AccentBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
                         Click="BackBtn_Click" Margin="0,0,6,0"/>
-                <TextBlock Grid.Column="1" Text="LegacyEditor" FontSize="12" FontWeight="SemiBold"
+                <Image Grid.Column="1" Source="pack://application:,,,/LegacyEditor.ico"
+                       Width="20" Height="20" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="LegacyEditor" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource AccentBrush}"
                            VerticalAlignment="Center" Margin="0,0,12,0"/>
-                <TextBlock Grid.Column="2" x:Name="FileTitle" FontSize="12"
+                <TextBlock Grid.Column="3" x:Name="FileTitle" FontSize="12"
                            Foreground="{StaticResource TextSecondaryBrush}"
                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Grid.Column="3" x:Name="FileStatus" Style="{StaticResource SubText}"
+                <TextBlock Grid.Column="4" x:Name="FileStatus" Style="{StaticResource SubText}"
                            FontSize="11" VerticalAlignment="Center" Margin="8,0,8,0"/>
-                <Button Grid.Column="4" x:Name="MinBtn" Content="&#x2014;" Width="40" Height="28"
+                <Button Grid.Column="5" x:Name="MinBtn" Content="&#x2014;" Width="40" Height="28"
                         FontSize="14" Padding="0" BorderThickness="0"
                         Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
                         Click="MinBtn_Click"/>
-                <Button Grid.Column="5" x:Name="CloseBtn" Content="&#x2716;" Width="40" Height="28"
+                <Button Grid.Column="6" x:Name="CloseBtn" Content="&#x2716;" Width="40" Height="28"
                         FontSize="12" Padding="0" BorderThickness="0"
                         Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
@@ -270,6 +273,18 @@
                                 </Border>
                                 <controls:EntityPicker Grid.Row="1" x:Name="TileEntityPickerCtrl"/>
                             </Grid>
+                        </Border>
+
+                        <!-- Wipe card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Entity Wipe" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="Wipes entities from the selected dimensions in-memory. Use Save Changes to write to disk."
+                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                                <Button x:Name="WipeEntitiesBtn" Content="Wipe Entities"
+                                        Style="{StaticResource PrimaryButton}" Width="160" Height="36"
+                                        HorizontalAlignment="Left" Click="WipeEntities_Click"/>
+                            </StackPanel>
                         </Border>
 
                         <!-- Log card -->
@@ -665,8 +680,8 @@
                            Style="{StaticResource SubText}" VerticalAlignment="Center"/>
                 <Button x:Name="CancelBtn" Grid.Column="1" Content="Cancel" Width="80" Height="32"
                         IsEnabled="False" Click="CancelBtn_Click" Margin="0,0,8,0"/>
-                <Button x:Name="ProcessBtn" Grid.Column="2" Content="Process World" Width="150" Height="36"
-                        Style="{StaticResource PrimaryButton}" Click="ProcessBtn_Click"/>
+                <Button x:Name="ProcessBtn" Grid.Column="2" Content="Save Changes" Width="150" Height="36"
+                        Style="{StaticResource PrimaryButton}" Click="ProcessBtn_Click" IsEnabled="False"/>
             </Grid>
         </Border>
 
