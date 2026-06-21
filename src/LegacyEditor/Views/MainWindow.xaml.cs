@@ -13,6 +13,8 @@ namespace LegacyEditor.Views;
 public partial class MainWindow : Window
 {
     private readonly WorldWiperService _service = new();
+    static readonly string TempDir = Path.Combine(AppContext.BaseDirectory, "temp");
+    static readonly string TempFile = Path.Combine(TempDir, "temp.ms");
     private CancellationTokenSource? _cts;
     private bool _dimOverworld = true;
     private bool _dimNether = true;
@@ -36,6 +38,7 @@ public partial class MainWindow : Window
     public MainWindow(string? inputPath)
     {
         InitializeComponent();
+        Closed += MainWindow_Closed;
         var v = System.Reflection.Assembly.GetExecutingAssembly().GetName()?.Version;
         if (v != null) Title = $"LegacyEditor v{v.Major}.{v.Minor}.{v.Build}";
         InitPickers();
@@ -469,10 +472,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        var emptyCount = _allPlayers.Count(p => p.TotalItems == 0 && p.XpLevel == 0 && p.EnderChest.Count == 0);
+        var emptyCount = _allPlayers.Count(p => p.XpLevel < 1 && p.TotalItemCount <= 1);
         if (emptyCount == 0)
         {
-            ShowAlert("No empty players found.");
+            ShowAlert("No players matching wipe criteria found.");
             return;
         }
 
@@ -485,7 +488,7 @@ public partial class MainWindow : Window
         var logLines = new ObservableCollection<string>();
 
         WipeEmptyBtn.IsEnabled = false;
-        ProgressTitle.Text = "Removing empty players...";
+        ProgressTitle.Text = "Removing low level players...";
         ProgressBar.Minimum = 0;
         ProgressBar.Maximum = keepCount;
         ProgressBar.Value = 0;
@@ -513,10 +516,10 @@ public partial class MainWindow : Window
             RemoveEmptyLog(logLines, emptyFiles);
 
             ProgressStatus.Text = "Done!";
-            logLines.Add($"Removed {emptyCount} empty player(s)");
+            logLines.Add($"Removed {emptyCount} low level player(s)");
 
             PushUndo();
-            await RefreshWipeState(result, "Empty players removed");
+            await RefreshWipeState(result, "Low level players removed");
         }
         catch (Exception ex)
         {
@@ -728,20 +731,16 @@ public partial class MainWindow : Window
 
         try
         {
-            WipeSummary summary;
             if (_rawArchiveData != null)
             {
-                var wasCompressed = DetectCompressed(InputPathBox.Text);
-                summary = await Task.Run(async () =>
-                    await _service.ProcessWorld(_rawArchiveData, outputPath, config, progress, wasCompressed, InputPathBox.Text, _cts.Token),
-                    _cts.Token);
+                Directory.CreateDirectory(TempDir);
+                await File.WriteAllBytesAsync(TempFile, _rawArchiveData);
             }
-            else
-            {
-                summary = await Task.Run(async () =>
-                    await _service.ProcessWorld(InputPathBox.Text, outputPath, config, progress, _cts.Token),
-                    _cts.Token);
-            }
+
+            var input = _rawArchiveData != null ? TempFile : InputPathBox.Text;
+            WipeSummary summary = await Task.Run(async () =>
+                await _service.ProcessWorld(input, outputPath, config, progress, _cts.Token),
+                _cts.Token);
             Log("Processing complete!");
             FileStatus.Text = "Complete";
             ShowResultPopup(summary);
@@ -764,15 +763,9 @@ public partial class MainWindow : Window
         }
     }
 
-    static bool DetectCompressed(string path)
+    void MainWindow_Closed(object? sender, EventArgs e)
     {
-        try
-        {
-            var data = new byte[8];
-            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            fs.ReadExactly(data, 0, 8);
-            return BitConverter.ToInt32(data, 0) == 0;
-        }
-        catch { return false; }
+        try { Directory.Delete(TempDir, true); } catch { }
     }
+
 }

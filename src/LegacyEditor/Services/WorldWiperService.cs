@@ -12,10 +12,10 @@ public class WorldWiperService
         progress.Report($"Reading {inputPath}...");
         var rawData = await File.ReadAllBytesAsync(inputPath, ct);
         rawData = MaybeDecompressMsStatic(rawData, out var wasCompressed);
-        return await ProcessWorld(rawData, outputPath, config, progress, wasCompressed, inputPath, ct);
+        return await ProcessWorldImpl(rawData, outputPath, config, progress, wasCompressed, inputPath, ct);
     }
 
-    public async Task<WipeSummary> ProcessWorld(byte[] rawData, string outputPath,
+    async Task<WipeSummary> ProcessWorldImpl(byte[] rawData, string outputPath,
         WipeConfig config, IProgress<string> progress, bool wasCompressed, string logInputPath,
         CancellationToken ct = default)
     {

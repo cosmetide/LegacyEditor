@@ -461,7 +461,7 @@
 
                         <!-- Divider -->
                         <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
-                                      Background="{StaticResource BgBaseBrush}"
+        Background="{StaticResource BgBaseBrush}"
                                       BorderBrush="{StaticResource BorderBrush}"
                                       BorderThickness="0" ResizeBehavior="PreviousAndNext"/>
 
@@ -609,8 +609,7 @@
                                     Click="ImportAuthyDb_Click" Margin="0,0,6,0"/>
                             <Button x:Name="WipeEmptyBtn" Grid.Column="2" Content="Wipe Empty Players"
                                     Style="{StaticResource SmallButton}"
-                                    Click="WipeEmpty_Click" Margin="0,0,6,0"
-                                    ToolTip="Removes players with 0 items and 0 XP level"/>
+                                    Click="WipeEmpty_Click" Margin="0,0,6,0"/>
                             <Button x:Name="DeleteSelBtn" Grid.Column="3" Content="Delete Selected"
                                     Style="{StaticResource SmallButton}"
                                     Click="DeleteSelected_Click" Margin="0,0,6,0"

@@ -82,7 +82,7 @@ public static class XuidWipeService
     public static byte[] WipeEmptyPlayers(byte[] archiveData, List<PlayerData> players, IProgress<(int current, int total)>? progress = null)
     {
         var empty = players
-            .Where(p => p.TotalItems == 0 && p.XpLevel == 0 && p.EnderChest.Count == 0)
+            .Where(p => p.XpLevel < 1 && p.TotalItemCount <= 1)
             .Select(p => $"players\\{p.XUID}.dat")
             .ToHashSet();
 
