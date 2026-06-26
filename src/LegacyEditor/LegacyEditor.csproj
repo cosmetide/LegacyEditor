@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>LegacyEditor</AssemblyName>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <ApplicationIcon>LegacyEditor.ico</ApplicationIcon>
     <StartupObject>LegacyEditor.App</StartupObject>
   </PropertyGroup>

@@ -32,21 +32,21 @@
                 <Button x:Name="DefaultBtn" Content="Default" Style="{StaticResource SmallButton}"
                         Click="Default_Click" Margin="0,0,4,0" Width="55"/>
                 <Button x:Name="SelectNoneBtn" Content="None" Style="{StaticResource SmallButton}"
-                        Click="SelectNone_Click" Width="45"/>
+                        Click="SelectNone_Click" Width="55"/>
             </StackPanel>
         </Grid>
 
         <Border x:Name="CompactView" Grid.Row="1" MinHeight="38"
-                Background="{StaticResource BgElevatedBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource BgElevatedBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="8"
                 MouseDown="CompactView_MouseDown" Cursor="Hand">
             <WrapPanel x:Name="TagsPanel"/>
         </Border>
 
         <Border x:Name="ExpandedView" Grid.Row="1" Visibility="Collapsed" MinHeight="120"
-                Background="{StaticResource BgElevatedBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource BgElevatedBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="4">
             <Grid>
                 <Grid.RowDefinitions>

@@ -5,7 +5,7 @@ namespace LegacyEditor.Services;
 
 public static class PlayerDataService
 {
-    public static List<PlayerData> LoadPlayers(byte[] archiveData)
+    public static List<PlayerData> LoadPlayers(byte[] archiveData, IProgress<string>? progress = null)
     {
         var archive = MsArchive.Parse(archiveData);
         var players = new List<PlayerData>();
@@ -18,8 +18,13 @@ public static class PlayerDataService
                 .Where(e => e.Filename.StartsWith("players/") && e.Filename.EndsWith(".dat"))
                 .ToList();
 
-        foreach (var entry in playerFiles)
+        var total = playerFiles.Count;
+        var mapCount = 0;
+        progress?.Report($"Scanning {total} player(s)...");
+
+        for (int i = 0; i < total; i++)
         {
+            var entry = playerFiles[i];
             var xuid = ExtractXuid(entry.Filename);
             if (xuid == null) continue;
 
@@ -34,10 +39,16 @@ public static class PlayerDataService
 
                 var player = ParsePlayerNbt(tag, xuid.Value);
                 if (player != null)
+                {
                     players.Add(player);
+                    mapCount += player.MapCount;
+                    progress?.Report($"Player {i + 1}/{total}: {player.Username} — {player.MapCount} map(s), {player.TotalItemCount} item(s)");
+                }
             }
             catch { }
         }
+
+        progress?.Report($"Loaded {players.Count} player(s) with {mapCount} total map(s)");
 
         return players;
     }
@@ -119,14 +130,17 @@ public static class PlayerDataService
             var count = GetCount(itemDict, "Count");
             var damage = GetShort(itemDict, "Damage");
             var slot = GetByteInt(itemDict, "Slot");
+            var id = GetShort(itemDict, "id");
+
+            if (id == 0) id = GetByte(itemDict, "id");
 
             if (slot >= 100 && slot <= 103)
             {
-                player.Armor.Add(new ItemStack { Name = name, Count = count, Damage = damage });
+                player.Armor.Add(new ItemStack { Name = name, Id = id, Count = count, Damage = damage });
             }
             else
             {
-                player.Inventory.Add(new ItemStack { Name = name, Count = count, Damage = damage });
+                player.Inventory.Add(new ItemStack { Name = name, Id = id, Count = count, Damage = damage });
                 player.TotalItems += 1;
             }
             player.TotalItemCount += count;
@@ -152,8 +166,11 @@ public static class PlayerDataService
             var count = GetCount(itemDict, "Count");
             var damage = GetShort(itemDict, "Damage");
             var slot = GetByteInt(itemDict, "Slot");
+            var id = GetShort(itemDict, "id");
 
-            player.EnderChest.Add(new ItemStack { Name = name, Count = count, Damage = damage });
+            if (id == 0) id = GetByte(itemDict, "id");
+
+            player.EnderChest.Add(new ItemStack { Name = name, Id = id, Count = count, Damage = damage });
             player.TotalItemCount += count;
         }
     }

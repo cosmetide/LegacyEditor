@@ -99,6 +99,9 @@ public partial class WelcomeWindow : Window
         }
     }
 
+    void MinBtn_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    void CloseBtn_Click(object sender, RoutedEventArgs e) => Close();
+
     void OpenEditor(string path)
     {
         try

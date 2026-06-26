@@ -135,4 +135,56 @@ public static class RegionFile
         d[o + 2] = (byte)(v >> 16);
         d[o + 3] = (byte)(v >> 24);
     }
+
+    public static bool TryValidate(byte[] region, out string? error)
+    {
+        if (region == null || region.Length < 8192)
+        {
+            error = "Region data too short (less than 8192 bytes)";
+            return false;
+        }
+
+        int totalSectors = (region.Length + SectorBytes - 1) / SectorBytes;
+
+        // Build occupancy map from sector table (first 1024 entries = 8192 bytes)
+        int[] occupancy = new int[totalSectors];
+        for (int i = 0; i < 1024; i++)
+        {
+            int v = ReadI32LE(region, i * 4);
+            if (v == 0) continue;
+
+            int sector = v >> 8;
+            int count = v & 0xFF;
+            if (sector < 2)
+            {
+                error = $"Entry {i}: sector {sector} overlaps with header region";
+                return false;
+            }
+            if (count == 0)
+            {
+                error = $"Entry {i}: sector count is zero";
+                return false;
+            }
+            if (sector + count > totalSectors)
+            {
+                error = $"Entry {i}: sector {sector} + count {count} = {sector + count} exceeds total sectors {totalSectors}";
+                return false;
+            }
+            for (int s = 0; s < count; s++)
+                occupancy[sector + s]++;
+        }
+
+        // Check for sector overlap
+        for (int s = 2; s < totalSectors; s++)
+        {
+            if (occupancy[s] > 1)
+            {
+                error = $"Sector {s} is claimed by {occupancy[s]} entries";
+                return false;
+            }
+        }
+
+        error = null;
+        return true;
+    }
 }

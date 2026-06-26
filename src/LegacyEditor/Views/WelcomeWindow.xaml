@@ -3,28 +3,64 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="LegacyEditor"
-        Width="440" Height="340"
+        Width="440" Height="370"
         WindowStartupLocation="CenterScreen"
         SizeToContent="Height"
-        Background="{StaticResource BgBaseBrush}"
+        Background="{DynamicResource BgBaseBrush}"
         TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True">
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" CornerRadius="0" CaptionHeight="0" ResizeBorderThickness="0"/>
+        <shell:WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" CornerRadius="0" CaptionHeight="30" ResizeBorderThickness="0"/>
     </shell:WindowChrome.WindowChrome>
-    <Grid Background="{StaticResource BgBaseBrush}">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="340" Margin="0,24,0,20">
+    <Grid Background="{DynamicResource BgBaseBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <Border Grid.Row="0" Background="{DynamicResource BgSurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1" Padding="10,0,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="pack://application:,,,/LegacyEditor.ico"
+                       Width="20" Height="20" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="LegacyEditor" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="3" x:Name="MinBtn" Content="&#x2014;" Width="40" Height="28"
+                        FontSize="14" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="MinBtn_Click"/>
+                <Button Grid.Column="4" x:Name="CloseBtn" Content="&#x2716;" Width="40" Height="28"
+                        FontSize="12" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="CloseBtn_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Body -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="340" Margin="0,24,0,20">
             <TextBlock Text="LegacyEditor" FontSize="28" FontWeight="Light"
-                       Foreground="{StaticResource AccentBrush}"
+                       Foreground="{DynamicResource AccentBrush}"
                        HorizontalAlignment="Center" Margin="0,0,0,2"/>
             <TextBlock Text="for Minecraft: Legacy Console Edition" FontSize="12"
-                       Foreground="{StaticResource TextMutedBrush}"
+                       Foreground="{DynamicResource TextMutedBrush}"
                        HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
             <Border x:Name="DropZone" MinHeight="100" Padding="20"
-                    Background="{StaticResource BgSurfaceBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    Background="{DynamicResource BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1.5" CornerRadius="10"
                     AllowDrop="True"
                     DragOver="DropZone_DragOver"
@@ -32,11 +68,11 @@
                     Drop="DropZone_Drop">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Background" Value="{DynamicResource BgHoverBrush}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -44,10 +80,10 @@
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="&#x1F4C1;" FontSize="28" HorizontalAlignment="Center" Margin="0,0,0,6"/>
                     <TextBlock Text="Drop .ms file here" FontSize="13"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Center" Margin="0,0,0,2"/>
                     <TextBlock x:Name="DropHint" Text="or click Browse below" FontSize="11"
-                               Foreground="{StaticResource TextMutedBrush}"
+                               Foreground="{DynamicResource TextMutedBrush}"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
@@ -58,8 +94,8 @@
                     Height="36" FontSize="13"/>
 
             <Border x:Name="RecentPanel" MinHeight="0" MaxHeight="100"
-                    Background="{StaticResource BgSurfaceBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    Background="{DynamicResource BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1" CornerRadius="6"
                     Margin="0,10,0,0" Padding="4"
                     Visibility="Collapsed">

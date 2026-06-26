@@ -75,13 +75,6 @@ public class WorldWiperService
         {
             var displayName = EntityRegistry.GetDisplayName(group.Key);
             progress.Report($"  {group.Key} ({displayName}): {group.Count()}");
-            foreach (var r in group.Take(10))
-            {
-                var pos = r.PosX != null ? $" @ {r.PosX:F1},{r.PosY:F1},{r.PosZ:F1}" : "";
-                progress.Report($"    {r.RegionFile} [{r.ChunkX},{r.ChunkZ}] ({r.ListKey}){pos}");
-            }
-            if (group.Count() > 10)
-                progress.Report($"    ... and {group.Count() - 10} more");
         }
 
         progress.Report("Rebuilding archive...");
@@ -96,9 +89,9 @@ public class WorldWiperService
         using (var deflate = new ZLibStream(compStream, CompressionLevel.Optimal))
             deflate.Write(data);
         var comp = compStream.ToArray();
-        var flagBytes = BitConverter.GetBytes(0);
+        // PS4 is x86-64 (little-endian); BitConverter.GetBytes is correct on this architecture
         var sizeBytes = BitConverter.GetBytes(data.Length);
-        return [.. flagBytes, .. sizeBytes, .. comp];
+        return [0, 0, 0, 0, .. sizeBytes, .. comp];
     }
 
     (byte[]? newRegion, List<WipeResult> removed, int totalChunks, int readFailures) ProcessRegion(

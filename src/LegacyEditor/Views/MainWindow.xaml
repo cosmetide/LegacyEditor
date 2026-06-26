@@ -7,14 +7,15 @@
         Title="LegacyEditor"
         Width="1050" Height="680" MinWidth="900" MinHeight="520"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BgBaseBrush}"
+        Closing="Window_Closing"
+        Background="{DynamicResource BgBaseBrush}"
         TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" CornerRadius="0" CaptionHeight="30" ResizeBorderThickness="6"/>
     </shell:WindowChrome.WindowChrome>
-    <Grid Background="{StaticResource BgBaseBrush}">
+    <Grid Background="{DynamicResource BgBaseBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
@@ -22,8 +23,8 @@
         </Grid.RowDefinitions>
 
         <!-- Title bar (draggable) -->
-        <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+        <Border Grid.Row="0" Background="{DynamicResource BgSurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,0,0,1" Padding="10,0,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -34,30 +35,37 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" x:Name="BackBtn" Content="&#x2190;" Width="30" Height="26"
                         FontSize="12" Padding="0" BorderThickness="0"
-                        Background="Transparent" Foreground="{StaticResource AccentBrush}"
+                        Background="Transparent" Foreground="{DynamicResource AccentBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
                         Click="BackBtn_Click" Margin="0,0,6,0"/>
                 <Image Grid.Column="1" Source="pack://application:,,,/LegacyEditor.ico"
                        Width="20" Height="20" Margin="0,0,6,0" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="2" Text="LegacyEditor" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource AccentBrush}"
+                           Foreground="{DynamicResource AccentBrush}"
                            VerticalAlignment="Center" Margin="0,0,12,0"/>
                 <TextBlock Grid.Column="3" x:Name="FileTitle" FontSize="12"
-                           Foreground="{StaticResource TextSecondaryBrush}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Grid.Column="4" x:Name="FileStatus" Style="{StaticResource SubText}"
-                           FontSize="11" VerticalAlignment="Center" Margin="8,0,8,0"/>
-                <Button Grid.Column="5" x:Name="MinBtn" Content="&#x2014;" Width="40" Height="28"
+                <TextBlock Grid.Column="4" x:Name="FileStatus" FontSize="11"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <Button Grid.Column="5" x:Name="SettingsBtn" Content="&#x2699;" Width="36" Height="26"
                         FontSize="14" Padding="0" BorderThickness="0"
-                        Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                        Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="SettingsBtn_Click" ToolTip="Settings"/>
+                <Button Grid.Column="6" x:Name="MinBtn" Content="&#x2014;" Width="50" Height="28"
+                        FontSize="14" Padding="0" BorderThickness="0"
+                        Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
                         Click="MinBtn_Click"/>
-                <Button Grid.Column="6" x:Name="CloseBtn" Content="&#x2716;" Width="40" Height="28"
+                <Button Grid.Column="7" x:Name="CloseBtn" Content="&#x2716;" Width="50" Height="28"
                         FontSize="12" Padding="0" BorderThickness="0"
-                        Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                        Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True"
                         Click="CloseBtn_Click"/>
             </Grid>
@@ -65,14 +73,14 @@
 
         <!-- Tab control -->
         <TabControl Grid.Row="1" Margin="0" Padding="0"
-                     Background="{StaticResource BgBaseBrush}"
+                     Background="{DynamicResource BgBaseBrush}"
                      BorderThickness="0"
                      TabStripPlacement="Top">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
-                    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}"/>
-                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                    <Setter Property="Background" Value="{DynamicResource BgSurfaceBrush}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
                     <Setter Property="BorderThickness" Value="0,0,0,1"/>
                     <Setter Property="Padding" Value="16,8"/>
                     <Setter Property="FontSize" Value="13"/>
@@ -90,12 +98,12 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource BgBaseBrush}"/>
-                                        <Setter TargetName="TabBorder" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource BgBaseBrush}"/>
+                                        <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                                         <Setter TargetName="TabBorder" Property="BorderThickness" Value="0,0,0,2"/>
                                     </Trigger>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource BgHoverBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -107,7 +115,7 @@
             <!-- Entity tab -->
             <TabItem Header="Entity">
                 <ScrollViewer Padding="16,14,16,12" VerticalScrollBarVisibility="Auto"
-                               Background="{StaticResource BgBaseBrush}">
+                               Background="{DynamicResource BgBaseBrush}">
                     <StackPanel>
                         <!-- File card -->
                         <Border Style="{StaticResource Card}" Margin="0,0,0,10">
@@ -146,37 +154,37 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0" HorizontalAlignment="Center">
                                     <Border x:Name="DimOverworld" Width="160" Height="70" CornerRadius="8"
                                             BorderThickness="2" Cursor="Hand"
-                                            Background="{StaticResource BgElevatedBrush}"
-                                            BorderBrush="{StaticResource AccentBrush}"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource AccentBrush}"
                                             MouseDown="DimOverworld_MouseDown" Margin="0,0,8,0">
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="&#x1F30D;" FontSize="20" HorizontalAlignment="Center"/>
                                             <TextBlock Text="Overworld" FontSize="13" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     <Border x:Name="DimNether" Width="160" Height="70" CornerRadius="8"
                                             BorderThickness="2" Cursor="Hand"
-                                            Background="{StaticResource BgElevatedBrush}"
-                                            BorderBrush="{StaticResource BorderBrush}"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
                                             MouseDown="DimNether_MouseDown" Margin="0,0,8,0">
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="&#x1F525;" FontSize="20" HorizontalAlignment="Center"/>
                                             <TextBlock Text="Nether" FontSize="13" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     <Border x:Name="DimEnd" Width="160" Height="70" CornerRadius="8"
                                             BorderThickness="2" Cursor="Hand"
-                                            Background="{StaticResource BgElevatedBrush}"
-                                            BorderBrush="{StaticResource BorderBrush}"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
                                             MouseDown="DimEnd_MouseDown">
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="&#x1F4A0;" FontSize="20" HorizontalAlignment="Center"/>
                                             <TextBlock Text="End" FontSize="13" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
@@ -210,12 +218,12 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Border x:Name="WhitelistBtn" Grid.Column="0" Height="36" CornerRadius="6"
-                                            Cursor="Hand" Background="{StaticResource AccentBrush}"
-                                            BorderThickness="1" BorderBrush="{StaticResource AccentBrush}"
+                                            Cursor="Hand" Background="{DynamicResource AccentBrush}"
+                                            BorderThickness="1" BorderBrush="{DynamicResource AccentBrush}"
                                             MouseDown="WhitelistBtn_MouseDown" Margin="0,0,4,0">
                                         <Border.Style>
                                             <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                                                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter Property="Opacity" Value="0.85"/>
@@ -227,25 +235,25 @@
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <Border x:Name="BlacklistBtn" Grid.Column="1" Height="36" CornerRadius="6"
-                                            Cursor="Hand" Background="{StaticResource BgElevatedBrush}"
-                                            BorderThickness="1" BorderBrush="{StaticResource BorderBrush}"
+                                            Cursor="Hand" Background="{DynamicResource BgElevatedBrush}"
+                                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                                             MouseDown="BlacklistBtn_MouseDown" Margin="4,0,0,0">
                                         <Border.Style>
                                             <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+                                                <Setter Property="Background" Value="{DynamicResource BgElevatedBrush}"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                                        <Setter Property="Background" Value="{DynamicResource BgHoverBrush}"/>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
-                                        <TextBlock Text="Blacklist" Foreground="{StaticResource TextSecondaryBrush}"
+                                        <TextBlock Text="Blacklist" Foreground="{DynamicResource TextSecondaryBrush}"
                                                    FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </Grid>
                                 <TextBlock x:Name="ModeDesc" Text="Only checked entities will be wiped"
-                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                            Margin="0,6,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
@@ -263,11 +271,11 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Border Grid.Row="0" Background="#2a1a1a" BorderBrush="{StaticResource WarningBrush}"
+                                <Border Grid.Row="0" Background="#2a1a1a" BorderBrush="{DynamicResource WarningBrush}"
                                         BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,0,10">
-                                    <TextBlock Foreground="{StaticResource WarningBrush}" FontSize="12" TextWrapping="Wrap">
+                                    <TextBlock Foreground="{DynamicResource WarningBrush}" FontSize="12" TextWrapping="Wrap">
                                         <Run FontWeight="Bold" Text="Warning: "/>
-                                        <Run Text="Tile entities contain world data — chests, spawners, command blocks, etc. "/>
+                                        <Run Text="Tile entities contain world data - chests, spawners, command blocks, etc. "/>
                                         <Run Text="Wiping these removes their contents and functionality."/>
                                     </TextBlock>
                                 </Border>
@@ -280,46 +288,12 @@
                             <StackPanel>
                                 <TextBlock Text="Entity Wipe" Style="{StaticResource SectionTitle}"/>
                                 <TextBlock Text="Wipes entities from the selected dimensions in-memory. Use Save Changes to write to disk."
-                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,4,0,10"/>
+                                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,4,0,10"/>
                                 <Button x:Name="WipeEntitiesBtn" Content="Wipe Entities"
                                         Style="{StaticResource PrimaryButton}" Width="160" Height="36"
-                                        HorizontalAlignment="Left" Click="WipeEntities_Click"/>
+                                        HorizontalAlignment="Left" Click="WipeEntities_Click"
+                                        ToolTip="Remove selected entity types from chosen dimensions."/>
                             </StackPanel>
-                        </Border>
-
-                        <!-- Log card -->
-                        <Border Style="{StaticResource Card}" Margin="0,0,0,10" MinHeight="120">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Log"
-                                               FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
-                                               VerticalAlignment="Center"/>
-                                    <Button Grid.Column="2" Content="Clear" Style="{StaticResource SmallButton}"
-                                            Click="ClearLog_Click" Width="60"
-                                            VerticalAlignment="Center"/>
-                                </Grid>
-                                <Border Grid.Row="1" Background="{StaticResource BgElevatedBrush}"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="1" CornerRadius="6">
-                                    <TextBox x:Name="LogBox" IsReadOnly="True"
-                                             FontFamily="Consolas" FontSize="11"
-                                             Background="Transparent"
-                                             Foreground="{StaticResource TextPrimaryBrush}"
-                                             TextWrapping="Wrap" Padding="8,6"
-                                             BorderThickness="0"
-                                             VerticalScrollBarVisibility="Auto"/>
-                                </Border>
-                            </Grid>
                         </Border>
 
                         <Rectangle Height="52" Opacity="0"/>
@@ -328,8 +302,8 @@
             </TabItem>
 
             <!-- XUID tab -->
-            <TabItem Header="XUID">
-                <Grid Background="{StaticResource BgBaseBrush}">
+            <TabItem Header="XUID" Loaded="XuidTab_Loaded">
+                <Grid Background="{DynamicResource BgBaseBrush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -337,8 +311,8 @@
                     </Grid.RowDefinitions>
 
                     <!-- Top bar: search + sort -->
-                    <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush}"
+                    <Border Grid.Row="0" Background="{DynamicResource BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="0,0,0,1" Padding="12,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -353,8 +327,8 @@
                                      TextChanged="XuidSearch_TextChanged">
                                 <TextBox.Template>
                                     <ControlTemplate TargetType="TextBox">
-                                        <Border Background="{StaticResource BgElevatedBrush}"
-                                                BorderBrush="{StaticResource BorderBrush}"
+                                        <Border Background="{DynamicResource BgElevatedBrush}"
+                                                BorderBrush="{DynamicResource BorderBrush}"
                                                 BorderThickness="1" CornerRadius="4" Padding="6,4">
                                             <ScrollViewer x:Name="PART_ContentHost"/>
                                         </Border>
@@ -362,7 +336,7 @@
                                 </TextBox.Template>
                             </TextBox>
                             <TextBlock Grid.Column="0" IsHitTestVisible="False" FontSize="12"
-                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Foreground="{DynamicResource TextMutedBrush}"
                                        VerticalAlignment="Center" Margin="10,0,0,0">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
@@ -380,25 +354,26 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <TextBlock Grid.Column="1" Text="Sort by:" FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center" Margin="12,0,6,0"/>
                             <ComboBox x:Name="XuidSortBox" Grid.Column="2"
                                       FontSize="12" SelectedIndex="1"
-                                      Background="{StaticResource BgElevatedBrush}"
-                                      Foreground="{StaticResource TextPrimaryBrush}"
-                                      BorderBrush="{StaticResource BorderBrush}"
+                                      Background="{DynamicResource BgElevatedBrush}"
+                                      Foreground="{DynamicResource TextPrimaryBrush}"
+                                      BorderBrush="{DynamicResource BorderBrush}"
                                       SelectionChanged="XuidSort_Changed">
                                 <sys:String>Items</sys:String>
                                 <sys:String>XP Level</sys:String>
+                                <sys:String>Maps Owned</sys:String>
                             </ComboBox>
                             <TextBlock Grid.Column="3" Text="Order:" FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center" Margin="8,0,6,0"/>
                             <ComboBox x:Name="XuidSortDirBox" Grid.Column="4"
                                       FontSize="12" SelectedIndex="0"
-                                      Background="{StaticResource BgElevatedBrush}"
-                                      Foreground="{StaticResource TextPrimaryBrush}"
-                                      BorderBrush="{StaticResource BorderBrush}"
+                                      Background="{DynamicResource BgElevatedBrush}"
+                                      Foreground="{DynamicResource TextPrimaryBrush}"
+                                      BorderBrush="{DynamicResource BorderBrush}"
                                       SelectionChanged="XuidSort_Changed">
                                 <sys:String>Highest First</sys:String>
                                 <sys:String>Lowest First</sys:String>
@@ -415,8 +390,8 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Left: XUID list -->
-                        <Border Grid.Column="0" Background="{StaticResource BgSurfaceBrush}"
-                                BorderBrush="{StaticResource BorderBrush}"
+                        <Border Grid.Column="0" Background="{DynamicResource BgSurfaceBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,0,1,0" Padding="4,4">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -429,9 +404,9 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="XUID" FontSize="11" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
                                     <TextBlock Grid.Column="1" x:Name="PlayerCountText" FontSize="11"
-                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                               Foreground="{DynamicResource TextMutedBrush}"/>
                                 </Grid>
                                  <ListBox x:Name="XuidListBox" Grid.Row="1"
                                           Background="Transparent" BorderThickness="0"
@@ -439,32 +414,39 @@
                                           SelectionMode="Extended"
                                           SelectionChanged="XuidList_SelectionChanged"
                                           KeyDown="XuidListBox_KeyDown">
-                                    <ListBox.ItemTemplate>
+                                            <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Border Background="Transparent" Padding="6,3">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource AccentBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource AccentBrush}"
                                                                VerticalAlignment="Center" Text="{Binding XUID}"/>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
                                                                Margin="6,0,0,0" Text="|"/>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                                                Margin="6,0,0,0">
                                                         <Run Text="0x"/>
                                                         <Run Text="{Binding XUID, StringFormat={}{0:X16}}"/>
                                                     </TextBlock>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
                                                                Margin="6,0,0,0" Text="|"/>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource WarningBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource WarningBrush}"
                                                                Margin="6,0,0,0">
                                                         <Run Text="Lv."/>
                                                         <Run Text="{Binding XpLevel}"/>
                                                     </TextBlock>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
                                                                Margin="6,0,0,0" Text="|"/>
-                                                    <TextBlock FontSize="11" Foreground="{StaticResource SuccessBrush}"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource SuccessBrush}"
                                                                Margin="6,0,0,0">
                                                         <Run Text="{Binding TotalItemCount, StringFormat={}{0:N0}}"/>
                                                         <Run Text="items"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
+                                                               Margin="6,0,0,0" Text="|"/>
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource AccentBrush}"
+                                                               Margin="6,0,0,0">
+                                                        <Run Text="Maps: "/>
+                                                        <Run Text="{Binding MapCount}"/>
                                                     </TextBlock>
                                                 </StackPanel>
                                             </Border>
@@ -476,26 +458,26 @@
 
                         <!-- Divider -->
                         <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
-        Background="{StaticResource BgBaseBrush}"
-                                      BorderBrush="{StaticResource BorderBrush}"
+        Background="{DynamicResource BgBaseBrush}"
+                                      BorderBrush="{DynamicResource BorderBrush}"
                                       BorderThickness="0" ResizeBehavior="PreviousAndNext"/>
 
                         <!-- Right: player detail -->
-                        <Border Grid.Column="2" Background="{StaticResource BgSurfaceBrush}" Padding="12,8"
+                        <Border Grid.Column="2" Background="{DynamicResource BgSurfaceBrush}" Padding="12,8"
                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel x:Name="PlayerDetailPanel">
                                     <!-- Empty state -->
                                     <TextBlock x:Name="DetailEmptyText" Text="Select a player to view details"
-                                               FontSize="13" Foreground="{StaticResource TextMutedBrush}"
+                                               FontSize="13" Foreground="{DynamicResource TextMutedBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                                Margin="0,60,0,0"/>
                                     <!-- Detail content (hidden by default) -->
                                     <StackPanel x:Name="DetailContent" Visibility="Collapsed">
                                         <TextBlock x:Name="DetailUsername" FontSize="16" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
                                         <TextBlock x:Name="DetailXuid" FontSize="11"
-                                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,10"/>
+                                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,10"/>
                                         <Separator/>
                                         <Grid Margin="0,8,0,4">
                                             <Grid.ColumnDefinitions>
@@ -504,15 +486,33 @@
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="HEALTH" FontSize="10"
-                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
                                                 <TextBlock x:Name="DetailHealth" FontSize="16"
-                                                           Foreground="{StaticResource SuccessBrush}"/>
+                                                           Foreground="{DynamicResource SuccessBrush}"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1">
                                                 <TextBlock Text="HUNGER" FontSize="10"
-                                                           Foreground="{StaticResource TextMutedBrush}"/>
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
                                                 <TextBlock x:Name="DetailHunger" FontSize="16"
-                                                           Foreground="{StaticResource WarningBrush}"/>
+                                                           Foreground="{DynamicResource WarningBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                         <Grid Margin="0,4,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="ITEMS" FontSize="10"
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailItems" FontSize="14"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="SCORE" FontSize="10"
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailScore" FontSize="14"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             </StackPanel>
                                         </Grid>
                                         <Grid Margin="0,4,0,4">
@@ -521,28 +521,28 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
-                                                <TextBlock Text="ITEMS" FontSize="10"
-                                                           Foreground="{StaticResource TextMutedBrush}"/>
-                                                <TextBlock x:Name="DetailItems" FontSize="14"
-                                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="MAPS OWNED" FontSize="10"
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailMapsOwned" FontSize="14"
+                                                           Foreground="{DynamicResource AccentBrush}"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1">
-                                                <TextBlock Text="SCORE" FontSize="10"
-                                                           Foreground="{StaticResource TextMutedBrush}"/>
-                                                <TextBlock x:Name="DetailScore" FontSize="14"
-                                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="XP TOTAL" FontSize="10"
+                                                           Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock x:Name="DetailXpTotal" FontSize="14"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             </StackPanel>
                                         </Grid>
                                         <Separator Margin="0,6"/>
 
                                         <!-- Inventory -->
                                         <TextBlock Text="INVENTORY" FontSize="10" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                                    Margin="0,4,0,2"/>
                                         <ItemsControl x:Name="DetailInvList">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"
+                                                    <TextBlock FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
                                                                TextTrimming="CharacterEllipsis">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
@@ -561,25 +561,25 @@
 
                                         <!-- Armor -->
                                         <TextBlock Text="ARMOR" FontSize="10" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                                    Margin="0,8,0,2"/>
                                         <ItemsControl x:Name="DetailArmorList">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Name}" FontSize="12"
-                                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
 
                                         <!-- Ender Chest -->
                                         <TextBlock Text="ENDER CHEST" FontSize="10" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                                    Margin="0,8,0,2"/>
                                         <ItemsControl x:Name="DetailEnderChestList">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"
+                                                    <TextBlock FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
                                                                TextTrimming="CharacterEllipsis">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
@@ -595,6 +595,15 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
+
+                                        <!-- Owned Maps -->
+                                        <TextBlock Text="OWNED MAPS" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0,8,0,2"/>
+                                        <TextBlock x:Name="DetailOwnedMapsText" MaxHeight="180"
+                                                   TextWrapping="Wrap" FontSize="12"
+                                                   Foreground="{DynamicResource AccentBrush}"
+                                                   TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
                                 </StackPanel>
                             </ScrollViewer>
@@ -602,8 +611,8 @@
                     </Grid>
 
                     <!-- Bottom: wipe controls -->
-                    <Border Grid.Row="2" Background="{StaticResource BgSurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush}"
+                    <Border Grid.Row="2" Background="{DynamicResource BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="0,1,0,0" Padding="12,10">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -616,22 +625,25 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="ImportXuidBtn" Grid.Column="0" Content="Import XUID List"
+                             <Button x:Name="ImportXuidBtn" Grid.Column="0" Content="Import XUID List"
                                     Style="{StaticResource SmallButton}"
-                                    Click="ImportXuidList_Click" Margin="0,0,6,0"/>
-                            <Button x:Name="ImportAuthyBtn" Grid.Column="1" Content="Import Authy DB"
+                                    Click="ImportXuidList_Click" Margin="0,0,6,0"
+                                    ToolTip="Import a text file listing XUIDs for bulk operations."/>
+                             <Button x:Name="ImportAuthyBtn" Grid.Column="1" Content="Import Authy DB"
                                     Style="{StaticResource SmallButton}"
-                                    Click="ImportAuthyDb_Click" Margin="0,0,6,0"/>
-                            <Button x:Name="WipeEmptyBtn" Grid.Column="2" Content="Wipe Empty Players"
+                                    Click="ImportAuthyDb_Click" Margin="0,0,6,0"
+                                    ToolTip="Import an Authy database to extract linked XUIDs."/>
+                             <Button x:Name="WipeEmptyBtn" Grid.Column="2" Content="Wipe Empty Players"
                                     Style="{StaticResource SmallButton}"
-                                    Click="WipeEmpty_Click" Margin="0,0,6,0"/>
+                                    Click="WipeEmpty_Click" Margin="0,0,6,0"
+                                    ToolTip="Remove players with low XP (&lt;1) and few items (&lt;=1) from the archive."/>
                             <Button x:Name="DeleteSelBtn" Grid.Column="3" Content="Delete Selected"
                                     Style="{StaticResource SmallButton}"
                                     Click="DeleteSelected_Click" Margin="0,0,6,0"
                                     ToolTip="Delete selected players from the archive"
                                     IsEnabled="False"/>
                             <TextBlock x:Name="WipeStatusText" Grid.Column="4" FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center" Margin="12,0,12,0"/>
                             <Button x:Name="UndoBtn" Grid.Column="5" Content="Undo"
                                     Style="{StaticResource SmallButton}"
@@ -660,20 +672,162 @@
                             Panel.ZIndex="100">
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <ProgressBar IsIndeterminate="True" Width="200" Height="4"
-                                         Foreground="{StaticResource AccentBrush}"
-                                         Background="{StaticResource BgElevatedBrush}"/>
+                                         Foreground="{DynamicResource AccentBrush}"
+                                         Background="{DynamicResource BgElevatedBrush}"/>
                             <TextBlock x:Name="XuidLoadingText" FontSize="14"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        Margin="0,16,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </Grid>
             </TabItem>
+
+            <!-- World tab -->
+            <TabItem Header="World">
+                <ScrollViewer Padding="16,14,16,12" VerticalScrollBarVisibility="Auto"
+                               Background="{DynamicResource BgBaseBrush}">
+                    <StackPanel>
+                        
+
+                        <!-- Dimension Reset card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Dimension Reset" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="Select dimensions to reset — all region files will be removed for the game to regenerate."
+                                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,10"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                    <Border x:Name="DimResetOverworld" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            MouseDown="DimResetOverworld_MouseDown" Margin="0,0,8,0">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F30D;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Overworld" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="DimResetNether" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            MouseDown="DimResetNether_MouseDown" Margin="0,0,8,0">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F525;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Nether" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="DimResetEnd" Width="160" Height="70" CornerRadius="8"
+                                            BorderThickness="2" Cursor="Hand"
+                                            Background="{DynamicResource BgElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            MouseDown="DimResetEnd_MouseDown">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#x1F4A0;" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="End" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                                <Button x:Name="ResetDimensionBtn" Content="Reset Dimension"
+                                        Style="{StaticResource DangerButton}" Width="160" Height="32"
+                                        HorizontalAlignment="Left" Click="ResetDimension_Click" IsEnabled="False"
+                                        ToolTip="Delete region files for selected dimensions. The game regenerates them on next load."/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- World Diagnostics card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="World Diagnostics" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="Scan the archive for corrupt entries, region file chunk errors, and level.dat integrity issues."
+                                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,2,0,10"/>
+                                <Button x:Name="DiagnoseBtn" Content="Run Diagnostics"
+                                        Style="{StaticResource PrimaryButton}" Width="140" Height="36"
+                                        HorizontalAlignment="Left" Click="DiagnoseWorld_Click"
+                                        ToolTip="Scan archive for corrupt entries, region file errors, and level.dat integrity issues."/>
+                                <Border Background="{DynamicResource BgElevatedBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1" CornerRadius="6" Margin="0,10,0,0"
+                                        MinHeight="80" MaxHeight="200">
+                                    <TextBox x:Name="DiagnosisResultBox" IsReadOnly="True"
+                                             FontFamily="Consolas" FontSize="11"
+                                             Background="Transparent"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
+                                             TextWrapping="Wrap" Padding="8,6"
+                                             BorderThickness="0"
+                                             VerticalScrollBarVisibility="Auto"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Map Cleanup card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <DockPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Map Cleanup" Style="{StaticResource SectionTitle}" DockPanel.Dock="Left" Margin="0"/>
+                                     <Button x:Name="ScanMapsBtn" Content="Analyze Maps"
+                                            Style="{StaticResource SmallButton}" Width="100" Height="24"
+                                            HorizontalAlignment="Right" DockPanel.Dock="Right"
+                                            Click="ScanMaps_Click"
+                                            ToolTip="Scan map_*.dat files against player inventories, chunk containers, and largeMapDataMappings to find orphaned/unused maps."/>
+                                </DockPanel>
+                                <TextBlock Text="Scan map_*.dat files, find maps in player inventories and ender chests, and detect orphaned maps from largeMapDataMappings.dat."
+                                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBox x:Name="MapScanResultBox" IsReadOnly="True"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="{DynamicResource BgElevatedBrush}"
+                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                         TextWrapping="Wrap" Padding="8,6"
+                                         BorderThickness="0" MinHeight="60" MaxHeight="160"
+                                         VerticalScrollBarVisibility="Auto"/>
+
+                                <Border Background="{DynamicResource BgElevatedBrush}"
+                                        CornerRadius="6" Padding="10" Margin="0,10,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="Wipe Options" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+                                        <CheckBox x:Name="WipeOrphanedCheck" Content="Maps with no XUID linked" IsChecked="True"
+                                                  Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="WipeInvCheck" Content="Player Inventories &amp; Ender Chests" IsChecked="False"
+                                                  Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="WipeUnusedFilesCheck" Content="Unused map_*.dat files" IsChecked="True"
+                                                  Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <Button x:Name="WipeMapsBtn" Content="Wipe Selected"
+                                            Style="{StaticResource PrimaryButton}" Width="120" Height="32"
+                                            HorizontalAlignment="Left" IsEnabled="False"
+                                            Click="WipeMaps_Click"
+                                            ToolTip="Remove maps based on the checked options above. Uses one pass over the archive."/>
+                                    <Button x:Name="WipeAllMapsBtn" Content="Wipe All Maps"
+                                            Style="{StaticResource DangerButton}" Width="120" Height="32"
+                                            Margin="10,0,0,0" IsEnabled="False"
+                                            Click="WipeAllMaps_Click"
+                                            ToolTip="Remove ALL map items from inventories/containers/frames, then delete all map_*.dat files not placed in chunks."/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Rectangle Height="52" Opacity="0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
         </TabControl>
 
+        <!-- Hidden log storage (used by Settings dialog Logs section) -->
+        <TextBox x:Name="LogBox" IsReadOnly="True" Visibility="Collapsed"/>
+
         <!-- Bottom bar -->
-        <Border Grid.Row="2" Background="{StaticResource BgSurfaceBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+        <Border Grid.Row="2" Background="{DynamicResource BgSurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,1,0,0" Padding="14,10">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -686,26 +840,31 @@
                 <Button x:Name="CancelBtn" Grid.Column="1" Content="Cancel" Width="80" Height="32"
                         IsEnabled="False" Click="CancelBtn_Click" Margin="0,0,8,0"/>
                 <Button x:Name="ProcessBtn" Grid.Column="2" Content="Save Changes" Width="150" Height="36"
-                        Style="{StaticResource PrimaryButton}" Click="ProcessBtn_Click" IsEnabled="False"/>
+                        Style="{StaticResource PrimaryButton}" Click="ProcessBtn_Click" IsEnabled="False"
+                        ToolTip="Write all changes to the output file as a raw MS archive."/>
             </Grid>
         </Border>
 
+        <!-- Dialog dimming overlay -->
+        <Border x:Name="DialogOverlay" Grid.RowSpan="3"
+                Background="#801a1b23" Visibility="Collapsed"
+                Panel.ZIndex="199"/>
         <!-- Progress overlay -->
         <Border x:Name="ProgressOverlay" Grid.RowSpan="3" Visibility="Collapsed"
                 Background="#C01a1b23" Panel.ZIndex="200">
             <Border Width="420" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Background="{StaticResource BgSurfaceBrush}"
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+                    Background="{DynamicResource BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8"
                     Padding="20">
                 <StackPanel>
                     <TextBlock x:Name="ProgressTitle" FontSize="16" FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
                     <ProgressBar x:Name="ProgressBar" Height="6"
-                                 Foreground="{StaticResource AccentBrush}"
-                                 Background="{StaticResource BgElevatedBrush}"/>
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 Background="{DynamicResource BgElevatedBrush}"/>
                     <TextBlock x:Name="ProgressStatus" FontSize="12"
-                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,8,0,0"/>
-                    <Border Margin="0,8,0,0" Background="{StaticResource BgBaseBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0"/>
+                    <Border Margin="0,8,0,0" Background="{DynamicResource BgBaseBrush}"
                             CornerRadius="4" Padding="6,4" MaxHeight="160">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl x:Name="ProgressLog"/>

@@ -6,13 +6,12 @@
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Background="{StaticResource BgBaseBrush}"
+        Background="{DynamicResource BgBaseBrush}"
         TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
-        ShowInTaskbar="False"
-        AllowsTransparency="True">
-    <Border Background="{StaticResource BgBaseBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8">
+        ShowInTaskbar="False">
+    <Border Background="{DynamicResource BgBaseBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid Margin="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -21,9 +20,9 @@
             </Grid.RowDefinitions>
 
             <!-- Title bar -->
-            <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
-                    CornerRadius="8,8,0,0" Padding="16,12">
+            <Border Grid.Row="0" Background="{DynamicResource BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
+                    Padding="16,12">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -31,10 +30,10 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Wipe Complete" FontSize="16" FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                     <Button Grid.Column="2" Content="&#x2716;" Width="28" Height="28"
                             FontSize="12" Padding="0" BorderThickness="0"
-                            Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                            Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}"
                             Click="CloseBtn_Click"/>
                 </Grid>
             </Border>
@@ -43,37 +42,37 @@
             <ScrollViewer Grid.Row="1" Padding="20,16,20,12" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <!-- Total removed -->
-                    <Border Background="{StaticResource BgSurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+                    <Border Background="{DynamicResource BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8"
                             Padding="16,14" Margin="0,0,0,12">
                         <StackPanel>
                             <TextBlock Text="Entities Removed" FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
                             <TextBlock x:Name="TotalRemovedText" FontSize="36" FontWeight="Light"
-                                       Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0"/>
+                                       Foreground="{DynamicResource AccentBrush}" Margin="0,2,0,0"/>
                             <TextBlock x:Name="ChunksScannedText" FontSize="11"
-                                       Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Dimensions -->
-                    <Border Background="{StaticResource BgSurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+                    <Border Background="{DynamicResource BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8"
                             Padding="16,12" Margin="0,0,0,12">
                         <StackPanel>
                             <TextBlock Text="By Dimension" Style="{StaticResource SectionTitle}"/>
                             <TextBlock x:Name="DimOverworld" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0"/>
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,0"/>
                             <TextBlock x:Name="DimNether" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0"/>
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,0"/>
                             <TextBlock x:Name="DimEnd" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0"/>
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Top entities -->
-                    <Border Background="{StaticResource BgSurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+                    <Border Background="{DynamicResource BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8"
                             Padding="16,12">
                         <StackPanel>
                             <TextBlock Text="Top Entities Removed" Style="{StaticResource SectionTitle}"/>
@@ -86,10 +85,10 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Name}"
-                                                       FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                       FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             <TextBlock Grid.Column="1" Text="{Binding Count}"
                                                        FontSize="13" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -100,9 +99,9 @@
             </ScrollViewer>
 
             <!-- Bottom bar -->
-            <Border Grid.Row="2" Background="{StaticResource BgSurfaceBrush}"
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
-                    CornerRadius="0,0,8,8" Padding="16,10">
+            <Border Grid.Row="2" Background="{DynamicResource BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                    Padding="16,10">
                 <Button Content="OK" Style="{StaticResource PrimaryButton}"
                         Width="80" Height="32" HorizontalAlignment="Right"
                         Click="OkBtn_Click" IsDefault="True"/>

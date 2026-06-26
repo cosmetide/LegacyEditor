@@ -40,9 +40,17 @@ public static class XuidWipeService
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            var val = reader.GetString(0);
-            if (ulong.TryParse(val, out var x))
+            var val = reader.GetString(0).Trim();
+            if (string.IsNullOrEmpty(val)) continue;
+            if (val.StartsWith("0x") || val.StartsWith("0X"))
+            {
+                if (ulong.TryParse(val[2..], System.Globalization.NumberStyles.HexNumber, null, out var x))
+                    xuids.Add(x);
+            }
+            else if (ulong.TryParse(val, out var x))
+            {
                 xuids.Add(x);
+            }
         }
 
         return xuids;
@@ -71,18 +79,26 @@ public static class XuidWipeService
         return archive.Rebuild(archiveData, toRemove, progress);
     }
 
-    public static byte[] DeletePlayers(byte[] archiveData, List<PlayerData> toDelete)
+    public static byte[] DeletePlayers(byte[] archiveData, List<PlayerData> toDelete,
+        IProgress<(int current, int total)>? progress = null)
     {
         var toRemove = toDelete.Select(p => $"players\\{p.XUID}.dat").ToHashSet();
         if (toRemove.Count == 0) return archiveData;
         var archive = MsArchive.Parse(archiveData);
+        var entries = toRemove.ToList();
+        for (int i = 0; i < entries.Count; i++)
+        {
+            progress?.Report((i + 1, entries.Count));
+        }
         return archive.Rebuild(archiveData, toRemove);
     }
 
-    public static byte[] WipeEmptyPlayers(byte[] archiveData, List<PlayerData> players, IProgress<(int current, int total)>? progress = null)
+    public static byte[] WipeEmptyPlayers(byte[] archiveData, List<PlayerData> players,
+        int xpThreshold = 1, int itemThreshold = 1,
+        IProgress<(int current, int total)>? progress = null)
     {
         var empty = players
-            .Where(p => p.XpLevel < 1 && p.TotalItemCount <= 1)
+            .Where(p => p.XpLevel < xpThreshold && p.TotalItemCount <= itemThreshold)
             .Select(p => $"players\\{p.XUID}.dat")
             .ToHashSet();
 

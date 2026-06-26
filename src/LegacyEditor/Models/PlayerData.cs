@@ -11,6 +11,8 @@ public class PlayerData
     public int Score { get; set; }
     public int TotalItems { get; set; }
     public int TotalItemCount { get; set; }
+    public int MapCount { get; set; }
+    public List<int> OwnedMapIds { get; set; } = [];
     public List<ItemStack> Inventory { get; set; } = [];
     public List<ItemStack> Armor { get; set; } = [];
     public List<ItemStack> EnderChest { get; set; } = [];
@@ -22,6 +24,7 @@ public class PlayerData
 public class ItemStack
 {
     public string Name { get; set; } = "";
+    public short Id { get; set; }
     public int Count { get; set; }
     public int Damage { get; set; }
 }
